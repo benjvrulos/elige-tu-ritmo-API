@@ -1,0 +1,13 @@
+POST http://localhost:3000/styles
+Content-Type:application/json
+{
+    "name":"Bachata",
+    "description":"Baile originario de la República Dominicana, que se caracteriza por su ritmo sensual y movimientos de cadera. La bachata se ha convertido en un género musical y un estilo de baile popular en todo el mundo, con una gran variedad de estilos y fusiones."
+}
+
+POST http://localhost:3000/styles
+Content-Type:application/json
+{
+    "name":"Salsa",
+    "description":"Salsa es un género musical y un estilo de baile que se originó en la comunidad latina de Nueva York en la década de 1960. La salsa combina elementos de música cubana, puertorriqueña y otros estilos caribeños, y se caracteriza por su ritmo rápido y enérgico, así como por sus movimientos sensuales y acrobáticos."
+}

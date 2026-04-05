@@ -15,12 +15,14 @@ const class_validator_1 = require("class-validator");
 class CreateAcademyDto {
     name;
     location;
+    phone;
     website_url;
     instagram_url;
     maps_url;
     image;
     comuna_id;
     user_id;
+    style_ids;
 }
 exports.CreateAcademyDto = CreateAcademyDto;
 __decorate([
@@ -45,6 +47,17 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateAcademyDto.prototype, "location", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'This is the academy phone',
+        example: '+56912346578',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(4),
+    (0, class_validator_1.MaxLength)(512),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateAcademyDto.prototype, "phone", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
         description: 'academy url page',
@@ -95,4 +108,10 @@ __decorate([
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], CreateAcademyDto.prototype, "user_id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Array of styles ids', example: [1, 2] }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsInt)({ each: true }),
+    __metadata("design:type", Array)
+], CreateAcademyDto.prototype, "style_ids", void 0);
 //# sourceMappingURL=create-academy.dto.js.map

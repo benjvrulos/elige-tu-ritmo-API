@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { CreateAcademyDto } from '../dtos/create-academy.dto';
 import { UsersService } from 'src/users/providers/users.service';
 import { ComunasService } from 'src/comunas/providers/comunas.service';
+import { Style } from 'src/styles/style.entity';
+import { StylesService } from 'src/styles/providers/styles.service';
 
 @Injectable()
 export class AcademiesService {
@@ -18,6 +20,12 @@ export class AcademiesService {
      * Inject Comuna Service
      */
     private readonly comunaService: ComunasService,
+
+    /**
+     * Inject Style Service
+     */
+
+    private readonly stylesService: StylesService,
 
     /**
      * Inject postsRepository
@@ -39,13 +47,22 @@ export class AcademiesService {
     const comuna = await this.comunaService.findOneById(
       createAcademyDto.comuna_id,
     );
-    // Create post
 
-    if (user && comuna) {
+    // Find styles from database
+    let styles: Style[] = [];
+
+    if (createAcademyDto.style_ids) {
+      styles = await this.stylesService.findMultipleStyles(
+        createAcademyDto.style_ids,
+      );
+    }
+
+    if (user && comuna && styles) {
       const academy = this.academyRepository.create({
         ...createAcademyDto,
-        user: user,
-        comuna: comuna,
+        user,
+        comuna,
+        styles,
       });
       return await this.academyRepository.save(academy);
     }

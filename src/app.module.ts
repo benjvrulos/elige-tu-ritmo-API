@@ -6,27 +6,43 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { ComunasModule } from './comunas/comunas.module';
 import { RegionsModule } from './regions/regions.module';
+import { StylesModule } from './styles/styles.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import appConfig from './config/app.config';
+import databaseConfig from './config/database.config';
+import environmentValidation from './config/environment.validation';
+
+const ENV = process.env.NODE_ENV;
 
 @Module({
   imports: [
     AcademiesModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: !ENV ? '.env' : `.env.${ENV}`,
+      load: [appConfig, databaseConfig],
+      validationSchema: environmentValidation,
+    }),
     TypeOrmModule.forRootAsync({
-      imports: [],
-      inject: [],
-      useFactory: () => ({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        autoLoadEntities: true,
-        synchronize: true,
-        port: 5432,
-        username: 'postgres',
-        password: '1234',
-        host: 'localhost',
-        database: 'elige-tu-ritmo',
+        autoLoadEntities: configService.get<boolean>(
+          'database.autoLoadEntities',
+        ),
+        synchronize: configService.get<boolean>('database.synchronize'),
+        port: configService.get<number>('database.port'),
+        username: configService.get<string>('database.user'),
+        password: configService.get<string>('database.password'),
+        host: configService.get<string>('database.host'),
+        database: configService.get<string>('database.name'),
       }),
     }),
     UsersModule,
     ComunasModule,
     RegionsModule,
+    StylesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

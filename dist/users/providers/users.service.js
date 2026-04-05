@@ -11,16 +11,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("../user.entity");
+const profile_config_1 = __importDefault(require("../config/profile.config"));
 let UsersService = class UsersService {
     usersRepository;
-    constructor(usersRepository) {
+    profileConfiguration;
+    constructor(usersRepository, profileConfiguration) {
         this.usersRepository = usersRepository;
+        this.profileConfiguration = profileConfiguration;
     }
     async createUser(createUserDto) {
         const existingUser = await this.usersRepository.findOne({
@@ -44,6 +50,7 @@ exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, common_1.Inject)(profile_config_1.default.KEY)),
+    __metadata("design:paramtypes", [typeorm_2.Repository, void 0])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

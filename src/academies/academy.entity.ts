@@ -1,6 +1,14 @@
 import { Comuna } from 'src/comunas/comuna.entity';
+import { Style } from 'src/styles/style.entity';
 import { User } from 'src/users/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Academy {
@@ -13,11 +21,14 @@ export class Academy {
   @ManyToOne(() => User, (user) => user.academies)
   user: User;
 
-  @Column({ type: 'varchar', length: 512, nullable: false })
+  @Column({ type: 'varchar', length: 512, nullable: false, unique: true })
   name: string;
 
   @Column({ type: 'varchar', length: 1024, nullable: false })
   location: string;
+
+  @Column({ type: 'varchar', length: 512, nullable: false })
+  phone: string;
 
   @Column({ type: 'varchar', length: 1024, nullable: false })
   website_url: string;
@@ -30,4 +41,8 @@ export class Academy {
 
   @Column({ type: 'varchar', length: 1024, nullable: false })
   image: string;
+
+  @ManyToMany(() => Style, (style) => style.academies, { eager: true })
+  @JoinTable()
+  styles: Style[];
 }

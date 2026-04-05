@@ -4,10 +4,12 @@ Content-Type:application/json
 {
   "name": "Bsoul studio",
   "location": "Rosas 1234",
+  "phone":"+56912346578",
   "website_url": "http://localhost.com/images.cl",
   "instagram_url": "http://localhost.com/images.cl",
   "maps_url": "http://localhost.com/images.cl",
   "image":"https://scontent-scl3-1.xx.fbcdn.net/v/t39.30808-6…dW-hnnaczKJVIl57tV8LeZ_NqDYPNbLRZwo-g&oe=69A2EE63",
   "user_id": 1,
-  "comuna_id":79
+  "comuna_id":79,
+  "style_ids":[1,2]
 }

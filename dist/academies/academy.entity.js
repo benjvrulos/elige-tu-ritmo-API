@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Academy = void 0;
 const comuna_entity_1 = require("../comunas/comuna.entity");
+const style_entity_1 = require("../styles/style.entity");
 const user_entity_1 = require("../users/user.entity");
 const typeorm_1 = require("typeorm");
 let Academy = class Academy {
@@ -19,10 +20,12 @@ let Academy = class Academy {
     user;
     name;
     location;
+    phone;
     website_url;
     instagram_url;
     maps_url;
     image;
+    styles;
 };
 exports.Academy = Academy;
 __decorate([
@@ -38,13 +41,17 @@ __decorate([
     __metadata("design:type", user_entity_1.User)
 ], Academy.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 512, nullable: false }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 512, nullable: false, unique: true }),
     __metadata("design:type", String)
 ], Academy.prototype, "name", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 1024, nullable: false }),
     __metadata("design:type", String)
 ], Academy.prototype, "location", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 512, nullable: false }),
+    __metadata("design:type", String)
+], Academy.prototype, "phone", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 1024, nullable: false }),
     __metadata("design:type", String)
@@ -61,6 +68,11 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 1024, nullable: false }),
     __metadata("design:type", String)
 ], Academy.prototype, "image", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => style_entity_1.Style, (style) => style.academies, { eager: true }),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", Array)
+], Academy.prototype, "styles", void 0);
 exports.Academy = Academy = __decorate([
     (0, typeorm_1.Entity)()
 ], Academy);

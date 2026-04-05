@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsArray,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -29,6 +30,16 @@ export class CreateAcademyDto {
   @MaxLength(1024)
   @IsNotEmpty()
   location: string;
+
+  @ApiProperty({
+    description: 'This is the academy phone',
+    example: '+56912346578',
+  })
+  @IsString()
+  @MinLength(4)
+  @MaxLength(512)
+  @IsNotEmpty()
+  phone: string;
 
   @ApiPropertyOptional({
     description: 'academy url page',
@@ -73,4 +84,9 @@ export class CreateAcademyDto {
   @IsNotEmpty()
   @IsInt()
   user_id: number;
+
+  @ApiProperty({ description: 'Array of styles ids', example: [1, 2] })
+  @IsArray()
+  @IsInt({ each: true })
+  style_ids: number[];
 }

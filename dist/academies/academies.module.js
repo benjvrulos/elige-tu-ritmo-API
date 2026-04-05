@@ -14,13 +14,19 @@ const typeorm_1 = require("@nestjs/typeorm");
 const academies_service_1 = require("./providers/academies.service");
 const users_module_1 = require("../users/users.module");
 const comunas_module_1 = require("../comunas/comunas.module");
+const styles_module_1 = require("../styles/styles.module");
 let AcademiesModule = class AcademiesModule {
 };
 exports.AcademiesModule = AcademiesModule;
 exports.AcademiesModule = AcademiesModule = __decorate([
     (0, common_1.Module)({
         controllers: [academies_controller_1.AcademiesController],
-        imports: [typeorm_1.TypeOrmModule.forFeature([academy_entity_1.Academy]), users_module_1.UsersModule, comunas_module_1.ComunasModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([academy_entity_1.Academy]),
+            users_module_1.UsersModule,
+            comunas_module_1.ComunasModule,
+            styles_module_1.StylesModule,
+        ],
         providers: [academies_service_1.AcademiesService],
     })
 ], AcademiesModule);

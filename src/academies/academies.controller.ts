@@ -7,7 +7,7 @@ import { CreateAcademyDto } from './dtos/create-academy.dto';
 @ApiTags('Academies')
 export class AcademiesController {
   constructor(
-    // Injecting Posts Service
+    // Injecting Academy Service
     private readonly academyService: AcademiesService,
   ) {}
 

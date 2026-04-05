@@ -20,13 +20,16 @@ const typeorm_2 = require("typeorm");
 const create_academy_dto_1 = require("../dtos/create-academy.dto");
 const users_service_1 = require("../../users/providers/users.service");
 const comunas_service_1 = require("../../comunas/providers/comunas.service");
+const styles_service_1 = require("../../styles/providers/styles.service");
 let AcademiesService = class AcademiesService {
     usersService;
     comunaService;
+    stylesService;
     academyRepository;
-    constructor(usersService, comunaService, academyRepository) {
+    constructor(usersService, comunaService, stylesService, academyRepository) {
         this.usersService = usersService;
         this.comunaService = comunaService;
+        this.stylesService = stylesService;
         this.academyRepository = academyRepository;
     }
     async findAll() {
@@ -35,11 +38,16 @@ let AcademiesService = class AcademiesService {
     async create(createAcademyDto) {
         const user = await this.usersService.findOneById(createAcademyDto.user_id);
         const comuna = await this.comunaService.findOneById(createAcademyDto.comuna_id);
-        if (user && comuna) {
+        let styles = [];
+        if (createAcademyDto.style_ids) {
+            styles = await this.stylesService.findMultipleStyles(createAcademyDto.style_ids);
+        }
+        if (user && comuna && styles) {
             const academy = this.academyRepository.create({
                 ...createAcademyDto,
-                user: user,
-                comuna: comuna,
+                user,
+                comuna,
+                styles,
             });
             return await this.academyRepository.save(academy);
         }
@@ -57,9 +65,10 @@ __decorate([
 ], AcademiesService.prototype, "create", null);
 exports.AcademiesService = AcademiesService = __decorate([
     (0, common_1.Injectable)(),
-    __param(2, (0, typeorm_1.InjectRepository)(academy_entity_1.Academy)),
+    __param(3, (0, typeorm_1.InjectRepository)(academy_entity_1.Academy)),
     __metadata("design:paramtypes", [users_service_1.UsersService,
         comunas_service_1.ComunasService,
+        styles_service_1.StylesService,
         typeorm_2.Repository])
 ], AcademiesService);
 //# sourceMappingURL=academies.service.js.map
