@@ -21,36 +21,70 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("../user.entity");
 const profile_config_1 = __importDefault(require("../config/profile.config"));
+const auth_service_1 = require("../../auth/providers/auth.service");
 let UsersService = class UsersService {
     usersRepository;
+    authService;
     profileConfiguration;
-    constructor(usersRepository, profileConfiguration) {
+    constructor(usersRepository, authService, profileConfiguration) {
         this.usersRepository = usersRepository;
+        this.authService = authService;
         this.profileConfiguration = profileConfiguration;
     }
     async createUser(createUserDto) {
-        const existingUser = await this.usersRepository.findOne({
-            where: { email: createUserDto.email },
-        });
+        let existingUser;
+        try {
+            existingUser = await this.usersRepository.findOne({
+                where: { email: createUserDto.email },
+            });
+        }
+        catch {
+            throw new common_1.RequestTimeoutException('Unable to process your request at the moment please try later', { description: 'Error conecting to the database' });
+        }
+        if (existingUser) {
+            throw new common_1.BadRequestException('The user already exists, please check ypur email');
+        }
         let newUser = this.usersRepository.create(createUserDto);
-        newUser = await this.usersRepository.save(newUser);
+        try {
+            newUser = await this.usersRepository.save(newUser);
+        }
+        catch {
+            throw new common_1.RequestTimeoutException('Unable to process your request at the moment please try later', { description: 'Error conecting to the database' });
+        }
         return newUser;
     }
     findAll(getUsersParamDto, limit, page) {
-        return [
-            { firstName: 'John', email: 'john@doe.com' },
-            { firstName: 'Alice', email: 'alice@doe.com' },
-        ];
+        throw new common_1.HttpException({
+            status: common_1.HttpStatus.MOVED_PERMANENTLY,
+            error: 'The API endpoint does not exist',
+            fileName: 'users.service.ts',
+            lineNumber: 88,
+        }, common_1.HttpStatus.MOVED_PERMANENTLY, {
+            cause: new Error(),
+            description: 'Ocurred because the API endpoint was permanentely moved',
+        });
     }
     async findOneById(id) {
-        return await this.usersRepository.findOneBy({ id });
+        let user;
+        try {
+            user = await this.usersRepository.findOneBy({ id });
+        }
+        catch {
+            throw new common_1.RequestTimeoutException('Unable to process your request at the moment please try later', { description: 'Error conecting to the database' });
+        }
+        if (!user) {
+            throw new common_1.BadRequestException('The user id does not exist');
+        }
+        return user;
     }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __param(1, (0, common_1.Inject)(profile_config_1.default.KEY)),
-    __metadata("design:paramtypes", [typeorm_2.Repository, void 0])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => auth_service_1.AuthService))),
+    __param(2, (0, common_1.Inject)(profile_config_1.default.KEY)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        auth_service_1.AuthService, void 0])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

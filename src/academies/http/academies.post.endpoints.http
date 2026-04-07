@@ -2,7 +2,7 @@ POST http://localhost:3000/academies
 Content-Type:application/json
 
 {
-  "name": "Bsoul studio",
+  "name": "Bsoul studio 2",
   "location": "Rosas 1234",
   "phone":"+56912346578",
   "website_url": "http://localhost.com/images.cl",

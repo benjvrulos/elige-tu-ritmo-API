@@ -15,6 +15,7 @@ const academies_service_1 = require("./providers/academies.service");
 const users_module_1 = require("../users/users.module");
 const comunas_module_1 = require("../comunas/comunas.module");
 const styles_module_1 = require("../styles/styles.module");
+const pagination_module_1 = require("../common/pagination/pagination.module");
 let AcademiesModule = class AcademiesModule {
 };
 exports.AcademiesModule = AcademiesModule;
@@ -26,6 +27,7 @@ exports.AcademiesModule = AcademiesModule = __decorate([
             users_module_1.UsersModule,
             comunas_module_1.ComunasModule,
             styles_module_1.StylesModule,
+            pagination_module_1.PaginationModule,
         ],
         providers: [academies_service_1.AcademiesService],
     })

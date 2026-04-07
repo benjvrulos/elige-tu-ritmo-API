@@ -8,6 +8,8 @@ import { ComunasModule } from './comunas/comunas.module';
 import { RegionsModule } from './regions/regions.module';
 import { StylesModule } from './styles/styles.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { PaginationModule } from './common/pagination/pagination.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import environmentValidation from './config/environment.validation';
@@ -43,6 +45,8 @@ const ENV = process.env.NODE_ENV;
     ComunasModule,
     RegionsModule,
     StylesModule,
+    AuthModule,
+    PaginationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

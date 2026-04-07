@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AcademiesService } from './providers/academies.service';
 import { CreateAcademyDto } from './dtos/create-academy.dto';
+import { GetAcademiesDto } from './dtos/get-academies.dto';
 
 @Controller('academies')
 @ApiTags('Academies')
@@ -18,8 +19,8 @@ export class AcademiesController {
       'You get a 200 response if you response is processed successfully',
   })
   @Get()
-  public getAll() {
-    return this.academyService.findAll();
+  public getAcademies(@Query() postQuery: GetAcademiesDto) {
+    return this.academyService.findAll(postQuery);
   }
 
   @ApiOperation({ summary: 'Retrieve one academy by id' })

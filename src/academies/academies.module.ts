@@ -6,6 +6,7 @@ import { AcademiesService } from './providers/academies.service';
 import { UsersModule } from 'src/users/users.module';
 import { ComunasModule } from 'src/comunas/comunas.module';
 import { StylesModule } from 'src/styles/styles.module';
+import { PaginationModule } from 'src/common/pagination/pagination.module';
 
 @Module({
   controllers: [AcademiesController],
@@ -14,6 +15,7 @@ import { StylesModule } from 'src/styles/styles.module';
     UsersModule,
     ComunasModule,
     StylesModule,
+    PaginationModule,
   ],
   providers: [AcademiesService],
 })

@@ -20,6 +20,8 @@ const comunas_module_1 = require("./comunas/comunas.module");
 const regions_module_1 = require("./regions/regions.module");
 const styles_module_1 = require("./styles/styles.module");
 const config_1 = require("@nestjs/config");
+const auth_module_1 = require("./auth/auth.module");
+const pagination_module_1 = require("./common/pagination/pagination.module");
 const app_config_1 = __importDefault(require("./config/app.config"));
 const database_config_1 = __importDefault(require("./config/database.config"));
 const environment_validation_1 = __importDefault(require("./config/environment.validation"));
@@ -55,6 +57,8 @@ exports.AppModule = AppModule = __decorate([
             comunas_module_1.ComunasModule,
             regions_module_1.RegionsModule,
             styles_module_1.StylesModule,
+            auth_module_1.AuthModule,
+            pagination_module_1.PaginationModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

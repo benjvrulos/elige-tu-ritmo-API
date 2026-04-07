@@ -17,13 +17,14 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const academies_service_1 = require("./providers/academies.service");
 const create_academy_dto_1 = require("./dtos/create-academy.dto");
+const get_academies_dto_1 = require("./dtos/get-academies.dto");
 let AcademiesController = class AcademiesController {
     academyService;
     constructor(academyService) {
         this.academyService = academyService;
     }
-    getAll() {
-        return this.academyService.findAll();
+    getAcademies(postQuery) {
+        return this.academyService.findAll(postQuery);
     }
     getAcademy(academyId) {
         if (academyId) {
@@ -42,10 +43,11 @@ __decorate([
         description: 'You get a 200 response if you response is processed successfully',
     }),
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [get_academies_dto_1.GetAcademiesDto]),
     __metadata("design:returntype", void 0)
-], AcademiesController.prototype, "getAll", null);
+], AcademiesController.prototype, "getAcademies", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Retrieve one academy by id' }),
     (0, swagger_1.ApiResponse)({

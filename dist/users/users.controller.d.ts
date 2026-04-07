@@ -4,9 +4,6 @@ import { CreateUserDto } from './dtos/create-user-dto';
 export declare class UsersController {
     private usersService;
     constructor(usersService: UsersService);
-    getUsers(getUsersParamDto: GetUsersParamDto, limit: number, page: number): {
-        firstName: string;
-        email: string;
-    }[];
+    getUsers(getUsersParamDto: GetUsersParamDto, limit: number, page: number): void;
     createUsers(createUserDto: CreateUserDto): Promise<import("./user.entity").User>;
 }
