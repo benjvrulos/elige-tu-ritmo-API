@@ -20,6 +20,8 @@ const sign_in_provider_1 = require("./providers/sign-in.provider");
 const config_1 = require("@nestjs/config");
 const jwt_config_1 = __importDefault(require("./config/jwt.config"));
 const jwt_1 = require("@nestjs/jwt");
+const generate_tokens_provider_1 = require("./providers/generate-tokens.provider");
+const refresh_tokens_provider_1 = require("./providers/refresh-tokens.provider");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -30,6 +32,8 @@ exports.AuthModule = AuthModule = __decorate([
             auth_service_1.AuthService,
             { provide: hashing_provider_1.HashingProvider, useClass: bcrypt_provider_1.BcryptProvider },
             sign_in_provider_1.SignInProvider,
+            generate_tokens_provider_1.GenerateTokensProvider,
+            refresh_tokens_provider_1.RefreshTokensProvider,
         ],
         imports: [
             (0, common_1.forwardRef)(() => users_module_1.UsersModule),
