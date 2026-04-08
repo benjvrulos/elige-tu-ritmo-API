@@ -16,6 +16,8 @@ import { PatchAcademyDto } from '../dtos/update-academy.dto';
 import { GetAcademiesDto } from '../dtos/get-academies.dto';
 import { PaginationProvider } from 'src/common/pagination/providers/pagination.provider';
 import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
+import { CreateAcademyProvider } from './create-academy.provider';
+import { ActiveUserData } from 'src/auth/interfaces/active-user.interfaces';
 
 @Injectable()
 export class AcademiesService {
@@ -47,6 +49,12 @@ export class AcademiesService {
      */
 
     private readonly paginationProvider: PaginationProvider,
+
+    /**
+     * Injecting Create Academy Provider
+     */
+
+    private readonly createAcademyProvider: CreateAcademyProvider,
   ) {}
 
   public async findAll(
@@ -62,31 +70,11 @@ export class AcademiesService {
   /**
    * Creating new academies
    */
-  public async create(@Body() createAcademyDto: CreateAcademyDto) {
-    // Find user from database based on userId
-    const user = await this.usersService.findOneById(createAcademyDto.user_id);
-    const comuna = await this.comunaService.findOneById(
-      createAcademyDto.comuna_id,
-    );
-
-    // Find styles from database
-    let styles: Style[] = [];
-
-    if (createAcademyDto.style_ids) {
-      styles = await this.stylesService.findMultipleStyles(
-        createAcademyDto.style_ids,
-      );
-    }
-
-    if (user && comuna && styles) {
-      const academy = this.academyRepository.create({
-        ...createAcademyDto,
-        user,
-        comuna,
-        styles,
-      });
-      return await this.academyRepository.save(academy);
-    }
+  public async create(
+    createAcademyDto: CreateAcademyDto,
+    user: ActiveUserData,
+  ) {
+    return await this.createAcademyProvider.create(createAcademyDto, user);
   }
 
   public async update(patchAcademyDto: PatchAcademyDto) {

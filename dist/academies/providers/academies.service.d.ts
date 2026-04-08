@@ -8,15 +8,18 @@ import { PatchAcademyDto } from '../dtos/update-academy.dto';
 import { GetAcademiesDto } from '../dtos/get-academies.dto';
 import { PaginationProvider } from 'src/common/pagination/providers/pagination.provider';
 import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
+import { CreateAcademyProvider } from './create-academy.provider';
+import { ActiveUserData } from 'src/auth/interfaces/active-user.interfaces';
 export declare class AcademiesService {
     private readonly academyRepository;
     private readonly usersService;
     private readonly comunaService;
     private readonly stylesService;
     private readonly paginationProvider;
-    constructor(academyRepository: Repository<Academy>, usersService: UsersService, comunaService: ComunasService, stylesService: StylesService, paginationProvider: PaginationProvider);
+    private readonly createAcademyProvider;
+    constructor(academyRepository: Repository<Academy>, usersService: UsersService, comunaService: ComunasService, stylesService: StylesService, paginationProvider: PaginationProvider, createAcademyProvider: CreateAcademyProvider);
     findAll(postQuery: GetAcademiesDto): Promise<Paginated<Academy>>;
-    create(createAcademyDto: CreateAcademyDto): Promise<Academy | undefined>;
+    create(createAcademyDto: CreateAcademyDto, user: ActiveUserData): Promise<Academy | undefined>;
     update(patchAcademyDto: PatchAcademyDto): Promise<Academy>;
     findOneById(academy_id: number): Promise<Academy | null>;
 }

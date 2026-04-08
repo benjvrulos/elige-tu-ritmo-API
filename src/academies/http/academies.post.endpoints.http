@@ -1,15 +1,13 @@
 POST http://localhost:3000/academies
 Content-Type:application/json
-
-{
-  "name": "Bsoul studio 2",
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImVtYWlsIjoicnVsb3NAZ21haWwuY29tIiwiaWF0IjoxNzc1NjY4NzYxLCJleHAiOjE3NzU2NzIzNjEsImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.OZXxgNbJhzNEK9AZGLYqfc-naElITUITSaHsFoeJakE
+ { "name": "Bsoul studio 2",
   "location": "Rosas 1234",
   "phone":"+56912346578",
   "website_url": "http://localhost.com/images.cl",
   "instagram_url": "http://localhost.com/images.cl",
   "maps_url": "http://localhost.com/images.cl",
   "image":"https://scontent-scl3-1.xx.fbcdn.net/v/t39.30808-6…dW-hnnaczKJVIl57tV8LeZ_NqDYPNbLRZwo-g&oe=69A2EE63",
-  "user_id": 1,
   "comuna_id":79,
   "style_ids":[1,2]
 }

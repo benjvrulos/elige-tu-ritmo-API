@@ -80,11 +80,6 @@ export class CreateAcademyDto {
   @IsInt()
   comuna_id: number;
 
-  @ApiProperty({ type: 'integer', required: true, example: 1 })
-  @IsNotEmpty()
-  @IsInt()
-  user_id: number;
-
   @ApiProperty({ description: 'Array of styles ids', example: [1, 2] })
   @IsArray()
   @IsInt({ each: true })

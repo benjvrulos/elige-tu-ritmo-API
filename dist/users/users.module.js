@@ -18,13 +18,15 @@ const users_service_1 = require("./providers/users.service");
 const config_1 = require("@nestjs/config");
 const profile_config_1 = __importDefault(require("./config/profile.config"));
 const auth_module_1 = require("../auth/auth.module");
+const create_user_provider_1 = require("./providers/create-user.provider");
+const find_one_user_by_email_provider_1 = require("./providers/find-one-user-by-email.provider");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
 exports.UsersModule = UsersModule = __decorate([
     (0, common_1.Module)({
         controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService],
+        providers: [users_service_1.UsersService, create_user_provider_1.CreateUserProvider, find_one_user_by_email_provider_1.FindOneUserByEmailProvider],
         exports: [users_service_1.UsersService],
         imports: [
             typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),

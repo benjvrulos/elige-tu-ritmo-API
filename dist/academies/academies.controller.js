@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const academies_service_1 = require("./providers/academies.service");
 const create_academy_dto_1 = require("./dtos/create-academy.dto");
 const get_academies_dto_1 = require("./dtos/get-academies.dto");
+const active_user_decorator_1 = require("../auth/decorators/active-user.decorator");
 let AcademiesController = class AcademiesController {
     academyService;
     constructor(academyService) {
@@ -31,8 +32,8 @@ let AcademiesController = class AcademiesController {
             return this.academyService.findOneById(Number(academyId));
         }
     }
-    async createAcademy(createAcademyDto) {
-        return this.academyService.create(createAcademyDto);
+    createAcademy(createAcademyDto, user) {
+        return this.academyService.create(createAcademyDto, user);
     }
 };
 exports.AcademiesController = AcademiesController;
@@ -68,9 +69,10 @@ __decorate([
     }),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, active_user_decorator_1.ActiveUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_academy_dto_1.CreateAcademyDto]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [create_academy_dto_1.CreateAcademyDto, Object]),
+    __metadata("design:returntype", void 0)
 ], AcademiesController.prototype, "createAcademy", null);
 exports.AcademiesController = AcademiesController = __decorate([
     (0, common_1.Controller)('academies'),

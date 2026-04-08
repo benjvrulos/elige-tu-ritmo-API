@@ -22,36 +22,23 @@ const typeorm_2 = require("typeorm");
 const user_entity_1 = require("../user.entity");
 const profile_config_1 = __importDefault(require("../config/profile.config"));
 const auth_service_1 = require("../../auth/providers/auth.service");
+const create_user_provider_1 = require("./create-user.provider");
+const find_one_user_by_email_provider_1 = require("./find-one-user-by-email.provider");
 let UsersService = class UsersService {
     usersRepository;
     authService;
     profileConfiguration;
-    constructor(usersRepository, authService, profileConfiguration) {
+    createUserProvider;
+    findOneUserByEamilProvider;
+    constructor(usersRepository, authService, profileConfiguration, createUserProvider, findOneUserByEamilProvider) {
         this.usersRepository = usersRepository;
         this.authService = authService;
         this.profileConfiguration = profileConfiguration;
+        this.createUserProvider = createUserProvider;
+        this.findOneUserByEamilProvider = findOneUserByEamilProvider;
     }
     async createUser(createUserDto) {
-        let existingUser;
-        try {
-            existingUser = await this.usersRepository.findOne({
-                where: { email: createUserDto.email },
-            });
-        }
-        catch {
-            throw new common_1.RequestTimeoutException('Unable to process your request at the moment please try later', { description: 'Error conecting to the database' });
-        }
-        if (existingUser) {
-            throw new common_1.BadRequestException('The user already exists, please check ypur email');
-        }
-        let newUser = this.usersRepository.create(createUserDto);
-        try {
-            newUser = await this.usersRepository.save(newUser);
-        }
-        catch {
-            throw new common_1.RequestTimeoutException('Unable to process your request at the moment please try later', { description: 'Error conecting to the database' });
-        }
-        return newUser;
+        return this.createUserProvider.createUser(createUserDto);
     }
     findAll(getUsersParamDto, limit, page) {
         throw new common_1.HttpException({
@@ -77,6 +64,9 @@ let UsersService = class UsersService {
         }
         return user;
     }
+    async findOneByEmail(email) {
+        return await this.findOneUserByEamilProvider.findOneByEmail(email);
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
@@ -85,6 +75,7 @@ exports.UsersService = UsersService = __decorate([
     __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => auth_service_1.AuthService))),
     __param(2, (0, common_1.Inject)(profile_config_1.default.KEY)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        auth_service_1.AuthService, void 0])
+        auth_service_1.AuthService, void 0, create_user_provider_1.CreateUserProvider,
+        find_one_user_by_email_provider_1.FindOneUserByEmailProvider])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

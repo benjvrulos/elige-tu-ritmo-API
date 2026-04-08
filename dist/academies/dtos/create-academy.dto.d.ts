@@ -7,6 +7,5 @@ export declare class CreateAcademyDto {
     maps_url: string;
     image: string;
     comuna_id: number;
-    user_id: number;
     style_ids: number[];
 }

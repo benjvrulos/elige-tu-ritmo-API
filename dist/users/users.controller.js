@@ -18,6 +18,8 @@ const swagger_1 = require("@nestjs/swagger");
 const get_users_param_dto_1 = require("./dtos/get-users-param.dto");
 const users_service_1 = require("./providers/users.service");
 const create_user_dto_1 = require("./dtos/create-user-dto");
+const auth_decorator_1 = require("../auth/decorators/auth.decorator");
+const auth_type_enum_1 = require("../auth/enums/auth-type.enum");
 let UsersController = class UsersController {
     usersService;
     constructor(usersService) {
@@ -63,6 +65,7 @@ __decorate([
 ], UsersController.prototype, "getUsers", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, auth_decorator_1.Auth)(auth_type_enum_1.AuthType.None),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),

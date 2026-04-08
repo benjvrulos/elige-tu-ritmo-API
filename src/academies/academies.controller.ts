@@ -3,6 +3,8 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AcademiesService } from './providers/academies.service';
 import { CreateAcademyDto } from './dtos/create-academy.dto';
 import { GetAcademiesDto } from './dtos/get-academies.dto';
+import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
+import { type ActiveUserData } from 'src/auth/interfaces/active-user.interfaces';
 
 @Controller('academies')
 @ApiTags('Academies')
@@ -43,7 +45,10 @@ export class AcademiesController {
       'You get a 201 response if you response is created successfully',
   })
   @Post()
-  public async createAcademy(@Body() createAcademyDto: CreateAcademyDto) {
-    return this.academyService.create(createAcademyDto);
+  public createAcademy(
+    @Body() createAcademyDto: CreateAcademyDto,
+    @ActiveUser() user: ActiveUserData,
+  ) {
+    return this.academyService.create(createAcademyDto, user);
   }
 }

@@ -15,6 +15,8 @@ import { GetUsersParamDto } from '../dtos/get-users-param.dto';
 import { type ConfigType } from '@nestjs/config';
 import profileConfig from '../config/profile.config';
 import { AuthService } from 'src/auth/providers/auth.service';
+import { CreateUserProvider } from './create-user.provider';
+import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
 
 @Injectable()
 export class UsersService {
@@ -32,45 +34,20 @@ export class UsersService {
     // Injecting ConfigService
     @Inject(profileConfig.KEY)
     private readonly profileConfiguration: ConfigType<typeof profileConfig>,
+
+    // Injectin CreateUserProvider
+    private readonly createUserProvider: CreateUserProvider,
+
+    /**
+     * Inject findOneUserByEamilProvider
+     */
+    private readonly findOneUserByEamilProvider: FindOneUserByEmailProvider,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
-    let existingUser: User | null;
-
-    try {
-      // Check is user exists with the same email
-      existingUser = await this.usersRepository.findOne({
-        where: { email: createUserDto.email },
-      });
-    } catch {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment please try later',
-        { description: 'Error conecting to the database' },
-      );
-    }
-
-    // Handle exception
-    if (existingUser) {
-      throw new BadRequestException(
-        'The user already exists, please check ypur email',
-      );
-    }
-
-    // Create a new user
-
-    let newUser = this.usersRepository.create(createUserDto);
-
-    try {
-      newUser = await this.usersRepository.save(newUser);
-    } catch {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment please try later',
-        { description: 'Error conecting to the database' },
-      );
-    }
-
-    return newUser;
+    return this.createUserProvider.createUser(createUserDto);
   }
+
   /**
    * The method to get all users from the database
    */
@@ -114,5 +91,9 @@ export class UsersService {
       throw new BadRequestException('The user id does not exist');
     }
     return user;
+  }
+
+  public async findOneByEmail(email: string) {
+    return await this.findOneUserByEamilProvider.findOneByEmail(email);
   }
 }

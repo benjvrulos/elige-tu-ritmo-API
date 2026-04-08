@@ -1,7 +1,12 @@
 import { UsersService } from 'src/users/providers/users.service';
+import { SignInDto } from '../dtos/signIn.dto';
+import { SignInProvider } from './sign-in.provider';
 export declare class AuthService {
     private readonly usersService;
-    constructor(usersService: UsersService);
-    login(email: string, password: string, id: string): string;
+    private readonly signInProvider;
+    constructor(usersService: UsersService, signInProvider: SignInProvider);
+    signIn(signInDto: SignInDto): Promise<{
+        accessToken: string;
+    }>;
     isAuth(): boolean;
 }

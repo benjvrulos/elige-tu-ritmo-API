@@ -21,7 +21,6 @@ class CreateAcademyDto {
     maps_url;
     image;
     comuna_id;
-    user_id;
     style_ids;
 }
 exports.CreateAcademyDto = CreateAcademyDto;
@@ -102,12 +101,6 @@ __decorate([
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], CreateAcademyDto.prototype, "comuna_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ type: 'integer', required: true, example: 1 }),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsInt)(),
-    __metadata("design:type", Number)
-], CreateAcademyDto.prototype, "user_id", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'Array of styles ids', example: [1, 2] }),
     (0, class_validator_1.IsArray)(),

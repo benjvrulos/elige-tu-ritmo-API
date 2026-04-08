@@ -17,44 +17,32 @@ const common_1 = require("@nestjs/common");
 const academy_entity_1 = require("../academy.entity");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
-const create_academy_dto_1 = require("../dtos/create-academy.dto");
 const users_service_1 = require("../../users/providers/users.service");
 const comunas_service_1 = require("../../comunas/providers/comunas.service");
 const styles_service_1 = require("../../styles/providers/styles.service");
 const pagination_provider_1 = require("../../common/pagination/providers/pagination.provider");
+const create_academy_provider_1 = require("./create-academy.provider");
 let AcademiesService = class AcademiesService {
     academyRepository;
     usersService;
     comunaService;
     stylesService;
     paginationProvider;
-    constructor(academyRepository, usersService, comunaService, stylesService, paginationProvider) {
+    createAcademyProvider;
+    constructor(academyRepository, usersService, comunaService, stylesService, paginationProvider, createAcademyProvider) {
         this.academyRepository = academyRepository;
         this.usersService = usersService;
         this.comunaService = comunaService;
         this.stylesService = stylesService;
         this.paginationProvider = paginationProvider;
+        this.createAcademyProvider = createAcademyProvider;
     }
     async findAll(postQuery) {
         const academies = await this.paginationProvider.paginateQuery({ limit: postQuery.limit, page: postQuery.page }, this.academyRepository);
         return academies;
     }
-    async create(createAcademyDto) {
-        const user = await this.usersService.findOneById(createAcademyDto.user_id);
-        const comuna = await this.comunaService.findOneById(createAcademyDto.comuna_id);
-        let styles = [];
-        if (createAcademyDto.style_ids) {
-            styles = await this.stylesService.findMultipleStyles(createAcademyDto.style_ids);
-        }
-        if (user && comuna && styles) {
-            const academy = this.academyRepository.create({
-                ...createAcademyDto,
-                user,
-                comuna,
-                styles,
-            });
-            return await this.academyRepository.save(academy);
-        }
+    async create(createAcademyDto, user) {
+        return await this.createAcademyProvider.create(createAcademyDto, user);
     }
     async update(patchAcademyDto) {
         let styles = [];
@@ -109,12 +97,6 @@ let AcademiesService = class AcademiesService {
     }
 };
 exports.AcademiesService = AcademiesService;
-__decorate([
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_academy_dto_1.CreateAcademyDto]),
-    __metadata("design:returntype", Promise)
-], AcademiesService.prototype, "create", null);
 exports.AcademiesService = AcademiesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(academy_entity_1.Academy)),
@@ -122,6 +104,7 @@ exports.AcademiesService = AcademiesService = __decorate([
         users_service_1.UsersService,
         comunas_service_1.ComunasService,
         styles_service_1.StylesService,
-        pagination_provider_1.PaginationProvider])
+        pagination_provider_1.PaginationProvider,
+        create_academy_provider_1.CreateAcademyProvider])
 ], AcademiesService);
 //# sourceMappingURL=academies.service.js.map
