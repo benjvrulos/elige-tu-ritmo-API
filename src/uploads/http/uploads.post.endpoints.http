@@ -1,0 +1,10 @@
+POST http://localhost:3000/uploads/file
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEwLCJlbWFpbCI6Im1hcmtAZG9lLmNvbSIsImlhdCI6MTc3OTIxMDE4NSwiZXhwIjoxNzc5MjEzNzg1LCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.mpYdaM3JRXtXzR3s4dXDeQRC56An4sbZ8hPxy4un5j8
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="file"; filename="santiago_latin_host.jpg"
+Content-Type: image/jpeg
+
+< ./santiago_latin_host.jpg
+------FormBoundary--

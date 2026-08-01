@@ -1,0 +1,28 @@
+POST http://localhost:3000/styles
+Content-Type:application/json
+{
+    "name":"Bachata",
+    "description":"Baile originario de la República Dominicana, que se caracteriza por su ritmo sensual y movimientos de cadera. La bachata se ha convertido en un género musical y un estilo de baile popular en todo el mundo, con una gran variedad de estilos y fusiones."
+}
+
+POST http://localhost:3000/styles
+Content-Type:application/json
+{
+    "name":"Salsa",
+    "description":"Salsa es un género musical y un estilo de baile que se originó en la comunidad latina de Nueva York en la década de 1960. La salsa combina elementos de música cubana, puertorriqueña y otros estilos caribeños, y se caracteriza por su ritmo rápido y enérgico, así como por sus movimientos sensuales y acrobáticos."
+}
+
+POST http://localhost:3000/styles
+Content-Type:application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImVtYWlsIjoicnVsb3NAZ21haWwuY29tIiwiaWF0IjoxNzg1MTc5OTEyLCJleHAiOjE3ODUxODM1MTIsImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.1hakieo18MaRanqS8CsQJXlaQBoDmn2HqK3zDCgPOnM
+{
+    "name":"Ballet",
+    "description":"El ballet clásico o danza clásica es una forma de danza cuyos movimientos están basados en el control total y absoluto del cuerpo, se recomienda empezar desde temprana edad debido a su grado de dificultad. A diferencia de otras danzas, en el ballet cada paso está codificado."
+}
+POST http://localhost:3000/styles
+Content-Type:application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImVtYWlsIjoicnVsb3NAZ21haWwuY29tIiwiaWF0IjoxNzg1MTc0ODU1LCJleHAiOjE3ODUxNzg0NTUsImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.Dn3w5bGO9f4xuj31YL9KJog62Rm4mkZZTez744Uy0Wc
+{
+    "name":"Pole Dance",
+    "description":"El pole dance (o baile en barra) es una disciplina que combina danza, acrobacias y gimnasia alrededor de un poste vertical. Exige gran fuerza, flexibilidad y resistencia física. Ha evolucionado más allá de su asociación con el entretenimiento, consolidándose como un deporte atlético, artístico y una completa práctica de fitness."
+}
