@@ -17,10 +17,18 @@ export class CreateAcademyDto {
     example: 'Bsoul studio',
   })
   @IsString()
-  @MinLength(4)
-  @MaxLength(512)
   @IsNotEmpty()
   name!: string;
+
+  @ApiProperty({
+    description: 'This is the academy description',
+    example: 'Academia de baile wenarda',
+  })
+  @MinLength(4)
+  @MaxLength(1024)
+  @IsNotEmpty()
+  @IsString()
+  description!: string;
 
   @ApiProperty({
     description: 'This is the academy location',

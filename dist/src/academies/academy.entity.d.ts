@@ -7,6 +7,7 @@ export declare class Academy {
     comuna: Comuna;
     user: User;
     name: string;
+    description: string;
     location: string;
     phone?: string;
     website_url?: string;

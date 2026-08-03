@@ -78,6 +78,7 @@ export class AcademiesController {
           format: 'binary',
         },
         name: { type: 'string' },
+        description: { type: 'string' },
         location: { type: 'string' },
         phone: { type: 'string' },
         website_url: { type: 'string' },

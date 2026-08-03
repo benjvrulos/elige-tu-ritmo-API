@@ -71,7 +71,10 @@ export class AcademiesService {
     createAcademyDto: CreateAcademyDto,
     user: ActiveUserData,
   ) {
-    // 1. upload image to S3 and create Upload record
+    if (!file) {
+      throw new BadRequestException('An academy image is required');
+    }
+
     const image = await this.uploadsService.uploadFile(file);
 
     // 2. create academy with the Upload entity

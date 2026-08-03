@@ -15,6 +15,7 @@ const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 class CreateAcademyDto {
     name;
+    description;
     location;
     phone;
     website_url;
@@ -30,11 +31,20 @@ __decorate([
         example: 'Bsoul studio',
     }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(4),
-    (0, class_validator_1.MaxLength)(512),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateAcademyDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'This is the academy description',
+        example: 'Academia de baile wenarda',
+    }),
+    (0, class_validator_1.MinLength)(4),
+    (0, class_validator_1.MaxLength)(1024),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAcademyDto.prototype, "description", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'This is the academy location',

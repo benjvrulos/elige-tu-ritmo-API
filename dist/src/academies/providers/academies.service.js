@@ -39,6 +39,9 @@ let AcademiesService = class AcademiesService {
         return academies;
     }
     async createAcademy(file, createAcademyDto, user) {
+        if (!file) {
+            throw new common_1.BadRequestException('An academy image is required');
+        }
         const image = await this.uploadsService.uploadFile(file);
         return this.createAcademyProvider.create(createAcademyDto, user, image);
     }

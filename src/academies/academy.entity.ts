@@ -24,8 +24,11 @@ export class Academy {
   @ManyToOne(() => User, (user) => user.academies)
   user!: User;
 
-  @Column({ type: 'varchar', length: 512, nullable: false, unique: true })
+  @Column({ type: 'varchar', length: 512, nullable: false })
   name!: string;
+
+  @Column({ type: 'varchar', length: 1024, nullable: false })
+  description!: string;
 
   @Column({ type: 'varchar', length: 1024, nullable: false })
   location!: string;

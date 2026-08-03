@@ -47,7 +47,7 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const aws_sdk_1 = require("aws-sdk");
 const path = __importStar(require("path"));
-const uuid_1 = require("uuid");
+const crypto_1 = require("crypto");
 let UploadToAwsProvider = class UploadToAwsProvider {
     configService;
     constructor(configService) {
@@ -75,7 +75,7 @@ let UploadToAwsProvider = class UploadToAwsProvider {
         name.replace(/\s/g, '').trim();
         const extension = path.extname(file.originalname);
         const timeStamp = new Date().getTime().toString().trim();
-        return `${name}-${timeStamp}-${(0, uuid_1.v4)()}${extension}`;
+        return `${name}-${timeStamp}-${(0, crypto_1.randomUUID)()}${extension}`;
     }
 };
 exports.UploadToAwsProvider = UploadToAwsProvider;

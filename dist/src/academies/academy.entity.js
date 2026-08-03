@@ -20,6 +20,7 @@ let Academy = class Academy {
     comuna;
     user;
     name;
+    description;
     location;
     phone;
     website_url;
@@ -42,9 +43,13 @@ __decorate([
     __metadata("design:type", user_entity_1.User)
 ], Academy.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 512, nullable: false, unique: true }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 512, nullable: false }),
     __metadata("design:type", String)
 ], Academy.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 1024, nullable: false }),
+    __metadata("design:type", String)
+], Academy.prototype, "description", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 1024, nullable: false }),
     __metadata("design:type", String)
