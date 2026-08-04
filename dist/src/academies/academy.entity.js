@@ -35,11 +35,12 @@ __decorate([
     __metadata("design:type", Number)
 ], Academy.prototype, "academy_id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => comuna_entity_1.Comuna, (comuna) => comuna.academies),
+    (0, typeorm_1.ManyToOne)(() => comuna_entity_1.Comuna, (comuna) => comuna.academies, { nullable: false }),
+    (0, typeorm_1.JoinColumn)({ name: 'comuna_id' }),
     __metadata("design:type", comuna_entity_1.Comuna)
 ], Academy.prototype, "comuna", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.academies),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.academies, { nullable: false }),
     __metadata("design:type", user_entity_1.User)
 ], Academy.prototype, "user", void 0);
 __decorate([
