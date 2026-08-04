@@ -18,10 +18,11 @@ export class Academy {
   @PrimaryGeneratedColumn()
   academy_id!: number;
 
-  @ManyToOne(() => Comuna, (comuna) => comuna.academies)
+  @ManyToOne(() => Comuna, (comuna) => comuna.academies, { nullable: false })
+  @JoinColumn({ name: 'comuna_id' })
   comuna!: Comuna;
 
-  @ManyToOne(() => User, (user) => user.academies)
+  @ManyToOne(() => User, (user) => user.academies, { nullable: false })
   user!: User;
 
   @Column({ type: 'varchar', length: 512, nullable: false })
