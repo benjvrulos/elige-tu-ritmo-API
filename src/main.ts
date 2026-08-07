@@ -40,7 +40,6 @@ async function bootstrap() {
     region: configService.get('appConfig.awsRegion'),
   });
 
-  ts;
   const allowedOrigins = [
     process.env.FRONTEND_DEV_URL,
     process.env.FRONTEND_PREVIEW_URL,
