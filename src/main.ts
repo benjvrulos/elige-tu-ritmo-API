@@ -40,9 +40,22 @@ async function bootstrap() {
     region: configService.get('appConfig.awsRegion'),
   });
 
+  ts;
+  const allowedOrigins = [
+    process.env.FRONTEND_DEV_URL,
+    process.env.FRONTEND_PREVIEW_URL,
+    process.env.FRONTEND_PROD_URL,
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: 'http://localhost:5000', // your React app's URL
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked: ${origin}`));
+      }
+    },
+    credentials: true,
   });
-  await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
