@@ -17,6 +17,7 @@ import { Paginated } from 'src/common/pagination/interfaces/paginated.interface'
 import { CreateAcademyProvider } from './create-academy.provider';
 import { ActiveUserData } from 'src/auth/interfaces/active-user.interfaces';
 import { UploadsService } from 'src/uploads/providers/uploads.service';
+import { Comuna } from 'src/comunas/comuna.entity';
 
 @Injectable()
 export class AcademiesService {
@@ -115,7 +116,7 @@ export class AcademiesService {
     try {
       // Returns null if the academy does not exist
       academy = await this.academyRepository.findOneBy({
-        academy_id: patchAcademyDto.id,
+        academy_id: patchAcademyDto.academy_id,
       });
     } catch {
       throw new RequestTimeoutException(
@@ -134,29 +135,37 @@ export class AcademiesService {
     academy.name = patchAcademyDto.name ?? academy.name;
     academy.location = patchAcademyDto.location ?? academy.location;
     academy.phone = patchAcademyDto.phone ?? academy.phone;
+    academy.description = patchAcademyDto.description ?? academy.description;
     academy.website_url = patchAcademyDto.website_url ?? academy.website_url;
     academy.instagram_url =
       patchAcademyDto.instagram_url ?? academy.instagram_url;
     academy.maps_url = patchAcademyDto.maps_url ?? academy.maps_url;
-    // academy.image = patchAcademyDto.image ?? academy.image;
+    if (patchAcademyDto.comuna_id) {
+      academy.comuna = { comuna_id: patchAcademyDto.comuna_id } as Comuna;
+      if (patchAcademyDto.style_ids) {
+        if (!styles || styles.length !== patchAcademyDto.style_ids.length) {
+          throw new BadRequestException('Invalid style IDs provided');
+        }
+        academy.styles = styles;
+      }
+      // academy.image = patchAcademyDto.image ?? academy.image;
 
-    // Assign the new styles
-    academy.styles = styles;
+      // Assign the new styles
 
-    // Save the academy and return
-    try {
-      await this.academyRepository.save(academy);
-    } catch {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment please try later',
-        {
-          description: 'Error connecting to the database',
-        },
-      );
+      // Save the academy and return
+      try {
+        await this.academyRepository.save(academy);
+      } catch {
+        throw new RequestTimeoutException(
+          'Unable to process your request at the moment please try later',
+          {
+            description: 'Error connecting to the database',
+          },
+        );
+      }
+      return academy;
     }
-    return academy;
   }
-
   public async findOneById(academy_id: number) {
     return await this.academyRepository.findOneBy({ academy_id });
   }

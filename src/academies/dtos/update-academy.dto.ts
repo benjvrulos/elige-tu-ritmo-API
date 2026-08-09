@@ -8,5 +8,5 @@ export class PatchAcademyDto extends PartialType(CreateAcademyDto) {
   })
   @IsInt()
   @IsNotEmpty()
-  id!: number;
+  academy_id!: number;
 }

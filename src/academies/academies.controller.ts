@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UploadedFile,
@@ -25,6 +26,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Academy } from './academy.entity';
+import { PatchAcademyDto } from './dtos/update-academy.dto';
 
 @Controller('academies')
 @ApiTags('Academies')
@@ -116,5 +118,17 @@ export class AcademiesController {
     @ActiveUser() user: ActiveUserData,
   ) {
     return this.academyService.createAcademy(file, createAcademyDto, user);
+  }
+
+  @ApiOperation({ summary: 'Updates an existing academy' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'You get a 200 response if the academy was updated successfully',
+  })
+  @ApiBearerAuth()
+  @Patch()
+  public updateAcademy(@Body() patchAcademyDto: PatchAcademyDto) {
+    return this.academyService.update(patchAcademyDto);
   }
 }

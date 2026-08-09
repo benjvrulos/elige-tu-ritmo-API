@@ -44,6 +44,7 @@ async function bootstrap() {
     process.env.FRONTEND_DEV_URL,
     process.env.FRONTEND_PREVIEW_URL,
     process.env.FRONTEND_PROD_URL,
+    process.env.SWAGGER_URL,
   ].filter(Boolean);
 
   app.enableCors({
