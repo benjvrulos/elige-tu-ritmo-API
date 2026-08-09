@@ -24,6 +24,7 @@ import { type ActiveUserData } from 'src/auth/interfaces/active-user.interfaces'
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Academy } from './academy.entity';
 
 @Controller('academies')
 @ApiTags('Academies')
@@ -33,6 +34,17 @@ export class AcademiesController {
     private readonly academyService: AcademiesService,
   ) {}
 
+  private mapAcademy(academy: Academy) {
+    const { comuna, ...rest } = academy;
+    const { region, ...comunaRest } = comuna ?? {};
+
+    return {
+      ...rest,
+      region: region ?? null,
+      comuna: comunaRest ?? null,
+    };
+  }
+
   @ApiOperation({ summary: 'Retrieve all academies' })
   @ApiResponse({
     status: 200,
@@ -41,10 +53,15 @@ export class AcademiesController {
   })
   @Auth(AuthType.None)
   @Get()
-  public getAcademies(@Query() postQuery: GetAcademiesDto) {
-    return this.academyService.findAll(postQuery, {
+  public async getAcademies(@Query() postQuery: GetAcademiesDto) {
+    const result = await this.academyService.findAll(postQuery, {
       relations: ['comuna', 'comuna.region', 'styles', 'image'],
     });
+
+    return {
+      ...result,
+      data: result.data.map((academy) => this.mapAcademy(academy)),
+    };
   }
 
   @ApiOperation({ summary: 'Retrieve one academy by id' })
