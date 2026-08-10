@@ -63,7 +63,7 @@ export class CreateAcademyDto {
     description: 'Instagram url academy',
     example: 'http://localhost.com/images.cl',
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsUrl()
   @MaxLength(1024)
   instagram_url?: string;
@@ -75,7 +75,7 @@ export class CreateAcademyDto {
   @IsUrl()
   @MinLength(4)
   @MaxLength(1024)
-  @IsNotEmpty()
+  @IsOptional()
   maps_url!: string;
 
   @Transform(({ value }) => Number(value))

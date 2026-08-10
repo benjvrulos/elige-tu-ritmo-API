@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -130,5 +132,11 @@ export class AcademiesController {
   @Patch()
   public updateAcademy(@Body() patchAcademyDto: PatchAcademyDto) {
     return this.academyService.update(patchAcademyDto);
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.academyService.remove(id);
   }
 }

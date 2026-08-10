@@ -60,4 +60,8 @@ export class UploadsService {
       throw new ConflictException(error);
     }
   }
+
+  async remove(upload: Upload): Promise<void> {
+    await this.uploadRepository.remove(upload);
+  }
 }

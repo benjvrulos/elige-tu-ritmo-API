@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Injectable,
+  NotFoundException,
   RequestTimeoutException,
 } from '@nestjs/common';
 import { Academy } from '../academy.entity';
@@ -168,5 +169,27 @@ export class AcademiesService {
   }
   public async findOneById(academy_id: number) {
     return await this.academyRepository.findOneBy({ academy_id });
+  }
+
+  async remove(academyId: number): Promise<void> {
+    const academy = await this.academyRepository.findOne({
+      where: { academy_id: academyId },
+      relations: ['image'],
+    });
+
+    if (!academy) {
+      throw new NotFoundException('Academy not found');
+    }
+
+    const uploadToDelete = academy.image;
+
+    // delete the academy first (clears the FK reference)
+    await this.academyRepository.remove(academy);
+
+    // then delete the upload row
+    if (uploadToDelete) {
+      await this.uploadsService.remove(uploadToDelete);
+      // and optionally delete the actual file from S3 here too
+    }
   }
 }

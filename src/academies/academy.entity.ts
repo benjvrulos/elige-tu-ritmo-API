@@ -40,13 +40,13 @@ export class Academy {
   @Column({ type: 'varchar', length: 1024, nullable: true })
   website_url?: string;
 
-  @Column({ type: 'varchar', length: 1024, nullable: true })
-  instagram_url?: string;
-
   @Column({ type: 'varchar', length: 1024, nullable: false })
-  maps_url!: string;
+  instagram_url!: string;
 
-  @OneToOne(() => Upload)
+  @Column({ type: 'varchar', length: 1024, nullable: true })
+  maps_url?: string;
+
+  @OneToOne(() => Upload, { onDelete: 'CASCADE' })
   @JoinColumn()
   image!: Upload;
 
