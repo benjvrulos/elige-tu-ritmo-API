@@ -30,6 +30,21 @@ export class UploadToAwsProvider {
     }
   }
 
+  public async fileDelete(key: string) {
+    const s3 = new S3();
+
+    try {
+      await s3
+        .deleteObject({
+          Bucket: this.configService.get('appConfig.awsBucketName') ?? '',
+          Key: key,
+        })
+        .promise();
+    } catch (error) {
+      throw new RequestTimeoutException(error);
+    }
+  }
+
   private generateFileName(file: Express.Multer.File) {
     // Extract file name
     const name = file.originalname.split('.')[0];

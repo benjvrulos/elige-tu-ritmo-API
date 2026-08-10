@@ -83,7 +83,10 @@ export class AcademiesService {
     return this.createAcademyProvider.create(createAcademyDto, user, image);
   }
 
-  public async update(patchAcademyDto: PatchAcademyDto) {
+  public async update(
+    patchAcademyDto: PatchAcademyDto,
+    file?: Express.Multer.File,
+  ) {
     let styles: Style[] | [] = [];
     let academy: Academy | null = null;
 
@@ -97,34 +100,26 @@ export class AcademiesService {
     } catch {
       throw new RequestTimeoutException(
         'Unable to process your request at the moment please try later',
-        {
-          description: 'Error connecting to the database',
-        },
+        { description: 'Error connecting to the database' },
       );
     }
 
-    /**
-     * If styles were not found
-     * Need to be equal number of styles
-     */
     if (!styles || styles.length !== patchAcademyDto.style_ids?.length) {
       throw new BadRequestException(
         'Please check your tag Ids and ensure they are correct',
       );
     }
 
-    // Find the Academy
+    // Find the Academy — now includes the image relation
     try {
-      // Returns null if the academy does not exist
-      academy = await this.academyRepository.findOneBy({
-        academy_id: patchAcademyDto.academy_id,
+      academy = await this.academyRepository.findOne({
+        where: { academy_id: patchAcademyDto.academy_id },
+        relations: ['image'],
       });
     } catch {
       throw new RequestTimeoutException(
         'Unable to process your request at the moment please try later',
-        {
-          description: 'Error connecting to the database',
-        },
+        { description: 'Error connecting to the database' },
       );
     }
 
@@ -141,31 +136,41 @@ export class AcademiesService {
     academy.instagram_url =
       patchAcademyDto.instagram_url ?? academy.instagram_url;
     academy.maps_url = patchAcademyDto.maps_url ?? academy.maps_url;
+
     if (patchAcademyDto.comuna_id) {
       academy.comuna = { comuna_id: patchAcademyDto.comuna_id } as Comuna;
-      if (patchAcademyDto.style_ids) {
-        if (!styles || styles.length !== patchAcademyDto.style_ids.length) {
-          throw new BadRequestException('Invalid style IDs provided');
-        }
-        academy.styles = styles;
-      }
-      // academy.image = patchAcademyDto.image ?? academy.image;
-
-      // Assign the new styles
-
-      // Save the academy and return
-      try {
-        await this.academyRepository.save(academy);
-      } catch {
-        throw new RequestTimeoutException(
-          'Unable to process your request at the moment please try later',
-          {
-            description: 'Error connecting to the database',
-          },
-        );
-      }
-      return academy;
     }
+
+    if (patchAcademyDto.style_ids) {
+      if (!styles || styles.length !== patchAcademyDto.style_ids.length) {
+        throw new BadRequestException('Invalid style IDs provided');
+      }
+      academy.styles = styles;
+    }
+
+    // Handle image replacement
+    const oldImage = academy.image;
+    if (file) {
+      const newUpload = await this.uploadsService.uploadFile(file);
+      academy.image = newUpload;
+    }
+
+    // Save the academy and return
+    try {
+      await this.academyRepository.save(academy);
+    } catch {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+        { description: 'Error connecting to the database' },
+      );
+    }
+
+    // Delete old image from S3 only after the new one is safely saved
+    if (file && oldImage) {
+      await this.uploadsService.removeWithS3(oldImage);
+    }
+
+    return academy;
   }
   public async findOneById(academy_id: number) {
     return await this.academyRepository.findOneBy({ academy_id });

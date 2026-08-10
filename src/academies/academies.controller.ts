@@ -128,10 +128,15 @@ export class AcademiesController {
     description:
       'You get a 200 response if the academy was updated successfully',
   })
-  @ApiBearerAuth()
-  @Patch()
-  public updateAcademy(@Body() patchAcademyDto: PatchAcademyDto) {
-    return this.academyService.update(patchAcademyDto);
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('image'))
+  public updateAcademy(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() patchAcademyDto: PatchAcademyDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    patchAcademyDto.academy_id = id;
+    return this.academyService.update(patchAcademyDto, file);
   }
 
   @Delete(':id')

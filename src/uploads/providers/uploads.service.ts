@@ -64,4 +64,9 @@ export class UploadsService {
   async remove(upload: Upload): Promise<void> {
     await this.uploadRepository.remove(upload);
   }
+
+  async removeWithS3(upload: Upload): Promise<void> {
+    await this.uploadToAwsProvider.fileDelete(upload.name);
+    await this.uploadRepository.remove(upload);
+  }
 }
