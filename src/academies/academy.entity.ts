@@ -1,4 +1,5 @@
 import { Comuna } from 'src/comunas/comuna.entity';
+import { ExperienceAcademy } from 'src/experiences/entities/experience-academy';
 import { Style } from 'src/styles/style.entity';
 import { Upload } from 'src/uploads/upload.entity';
 import { User } from 'src/users/user.entity';
@@ -9,6 +10,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -53,4 +55,10 @@ export class Academy {
   @ManyToMany(() => Style, (style) => style.academies)
   @JoinTable()
   styles!: Style[];
+
+  @OneToMany(
+    () => ExperienceAcademy,
+    (experienceAcademy) => experienceAcademy.academy,
+  )
+  experiences!: ExperienceAcademy[];
 }

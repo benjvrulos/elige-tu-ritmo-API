@@ -1,20 +1,29 @@
 import { Exclude } from 'class-transformer';
 import { Academy } from 'src/academies/academy.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { UserRole } from './enum/user-role.enum';
+import { Booking } from 'src/bookings/entities/booking.entity';
 
-@Entity()
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ type: 'varchar', length: 96, nullable: false })
-  firstName: string;
+  firstName!: string;
 
   @Column({ type: 'varchar', length: 96, nullable: true })
-  lastName?: string;
+  lastName!: string;
 
   @Column({ type: 'varchar', length: 96, nullable: false, unique: true })
-  email: string;
+  email?: string;
 
   @Exclude()
   @Column({ type: 'varchar', length: 96, nullable: true })
@@ -22,8 +31,41 @@ export class User {
 
   @Exclude()
   @Column({ type: 'varchar', nullable: true })
-  googleId: string;
+  googleId?: string;
+
+  @Column({ nullable: true })
+  phone?: string;
+
+  @Column({ type: 'varchar', length: 96, nullable: true })
+  nationality?: string;
+
+  @Column({ type: 'varchar', length: 96, nullable: true })
+  preferredLanguage?: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.CUSTOMER,
+    nullable: false,
+  })
+  role!: UserRole;
+
+  @Column({
+    type: 'boolean',
+    default: true,
+    nullable: false,
+  })
+  isActive!: boolean;
 
   @OneToMany(() => Academy, (academy) => academy.user)
-  academies: Academy[];
+  academies!: Academy[];
+
+  @OneToMany(() => Booking, (booking) => booking.user)
+  bookings!: Booking[];
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }

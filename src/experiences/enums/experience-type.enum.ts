@@ -1,0 +1,8 @@
+export enum ExperienceType {
+  DAY_TOUR = 'DAY_TOUR',
+  CULTURAL = 'CULTURAL',
+  DANCE_CLASS = 'DANCE_CLASS',
+  NIGHTLIFE = 'NIGHTLIFE',
+  FULL_DAY = 'FULL_DAY',
+  PRIVATE = 'PRIVATE',
+}

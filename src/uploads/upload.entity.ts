@@ -2,10 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { fileTypes } from './enums/file-types.enum';
+import { Academy } from 'src/academies/academy.entity';
+import { Place } from 'src/places/place.entity';
+import { Experience } from 'src/experiences/entities/experience.entity';
 
 @Entity()
 export class Upload {
@@ -31,6 +35,18 @@ export class Upload {
 
   @Column({ type: 'int', nullable: false })
   size!: number;
+
+  @Column({ length: 255, nullable: true })
+  altText?: string;
+
+  @OneToMany(() => Academy, (academy) => academy.image)
+  academies!: Academy[];
+
+  @OneToMany(() => Place, (place) => place.image)
+  places!: Place[];
+
+  @OneToMany(() => Experience, (experience) => experience.coverImage)
+  experiences!: Experience[];
 
   @CreateDateColumn()
   createDate!: Date;

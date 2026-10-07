@@ -19,6 +19,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
 import { AuthenticationGuard } from './auth/guards/authentication/authentication.guard';
 import { UploadsModule } from './uploads/uploads.module';
+import { ExperiencesModule } from './experiences/experiences.module';
+import { PlacesModule } from './places/places.module';
+import { BookingsModule } from './bookings/bookings.module';
+import { PaymentsModule } from './payments/payments.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -57,6 +61,10 @@ const ENV = process.env.NODE_ENV;
     AuthModule,
     PaginationModule,
     UploadsModule,
+    ExperiencesModule,
+    PlacesModule,
+    BookingsModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,0 +1,26 @@
+POST http://localhost:3000/places
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImVtYWlsIjoicnVsb3NAZ21haWwuY29tIiwiaWF0IjoxNzkxMzkyNjA5LCJleHAiOjE3OTEzOTYyMDksImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.y43dPAHi6ozGirX6LJUvz00oIyBX68pcTlfI_DRSEWQ
+
+{
+  "name": "Salón NDS",
+  "shortDescription": "Espacio donde se realizan los talleres de Bachata Dominicana.",
+  "description": "Salón destinado a clases y talleres de baile en Santiago.",
+  "type": "CULTURAL",
+  "address": "Palestina 54, piso 7, local 801, Santiago",
+  "comunaId": 79
+}
+
+POST http://localhost:3000/places
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImVtYWlsIjoicnVsb3NAZ21haWwuY29tIiwiaWF0IjoxNzkxMzkyNjA5LCJleHAiOjE3OTEzOTYyMDksImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.y43dPAHi6ozGirX6LJUvz00oIyBX68pcTlfI_DRSEWQ
+
+{
+  "name": "SBS Studio",
+  "shortDescription": "Espacio donde se realiza el social bailable.",
+  "description": "Estudio de baile ubicado en Santiago utilizado para eventos y sociales.",
+  "type": "SALSA_CLUB",
+  "address": "San Antonio 580, piso 11, salón N°1, Santiago",
+  "comunaId": 79,
+  "estimatedVisitMinutes": 240
+}

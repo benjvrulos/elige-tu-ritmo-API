@@ -1,0 +1,6 @@
+export enum BookingPaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  PARTIALLY_REFUNDED = 'PARTIALLY_REFUNDED',
+  REFUNDED = 'REFUNDED',
+}
