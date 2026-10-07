@@ -1,5 +1,5 @@
 import { Comuna } from 'src/comunas/comuna.entity';
-import { ExperienceAcademy } from 'src/experiences/entities/experience-academy';
+import { ExperienceAcademy } from 'src/experiences/entities/experience-academy.entity';
 import { Style } from 'src/styles/style.entity';
 import { Upload } from 'src/uploads/upload.entity';
 import { User } from 'src/users/user.entity';
@@ -48,9 +48,9 @@ export class Academy {
   @Column({ type: 'varchar', length: 1024, nullable: true })
   maps_url?: string;
 
-  @OneToOne(() => Upload, { onDelete: 'CASCADE' })
-  @JoinColumn()
-  image!: Upload;
+  @OneToOne(() => Upload, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'imageId' })
+  image!: Upload | null;
 
   @ManyToMany(() => Style, (style) => style.academies)
   @JoinTable()

@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { ExperiencesService } from './providers/experiences.service';
@@ -12,9 +13,11 @@ import { AddExperiencePlaceDto } from './dtos/add-experience-place.dto';
 import { AddExperienceAcademyDto } from './dtos/add-experience-academy.dto';
 import { AddExperienceStyleDto } from './dtos/add-experience-style.dto';
 import { CreateExperienceScheduleDto } from './dtos/add-experience-schedule.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
 
 @Controller('experiences')
-export class ExperienceController {
+export class ExperiencesController {
   constructor(private readonly experiencesService: ExperiencesService) {}
 
   @Post()
@@ -22,6 +25,7 @@ export class ExperienceController {
     return this.experiencesService.create(dto);
   }
 
+  @Auth(AuthType.None)
   @Get()
   findAll() {
     return this.experiencesService.findAll();
@@ -62,5 +66,13 @@ export class ExperienceController {
     @Body() dto: CreateExperienceScheduleDto,
   ) {
     return this.experiencesService.createSchedule(id, dto);
+  }
+
+  @Patch(':id/cover-image')
+  updateCoverImage(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('coverImageId', ParseIntPipe) coverImageId: number,
+  ) {
+    return this.experiencesService.updateCoverImage(id, coverImageId);
   }
 }

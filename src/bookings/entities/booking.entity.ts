@@ -1,4 +1,4 @@
-import { ExperienceSchedule } from 'src/experiences/entities/experience-schedule';
+import { ExperienceSchedule } from 'src/experiences/entities/experience-schedule.entity';
 import { User } from 'src/users/user.entity';
 import {
   Column,
@@ -10,7 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { BookingParticipant } from './booking-participant';
+import { BookingParticipant } from './booking-participant.entity';
 import { BookingStatus } from '../enums/bookin-status.enum';
 import { BookingPaymentStatus } from '../enums/booking-payment-status';
 import { Payment } from 'src/payments/payment.entity';

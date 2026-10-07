@@ -4,9 +4,9 @@ import { ExperiencesService } from './providers/experiences.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Experience } from './entities/experience.entity';
 import { ExperiencePlace } from './entities/experience-place.entity';
-import { ExperienceAcademy } from './entities/experience-academy';
+import { ExperienceAcademy } from './entities/experience-academy.entity';
 import { ExperienceStyle } from './entities/experience-style.entity';
-import { ExperienceSchedule } from './entities/experience-schedule';
+import { ExperienceSchedule } from './entities/experience-schedule.entity';
 
 @Module({
   imports: [

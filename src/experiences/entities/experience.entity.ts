@@ -12,8 +12,8 @@ import {
 import { ExperienceType } from '../enums/experience-type.enum';
 import { ExperiencePlace } from './experience-place.entity';
 import { ExperienceStyle } from './experience-style.entity';
-import { ExperienceAcademy } from './experience-academy';
-import { ExperienceSchedule } from './experience-schedule';
+import { ExperienceAcademy } from './experience-academy.entity';
+import { ExperienceSchedule } from './experience-schedule.entity';
 
 @Entity('experience')
 export class Experience {

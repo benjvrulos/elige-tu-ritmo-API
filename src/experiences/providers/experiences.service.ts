@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Experience } from '../entities/experience.entity';
 import { Repository } from 'typeorm';
 import { ExperiencePlace } from '../entities/experience-place.entity';
-import { ExperienceAcademy } from '../entities/experience-academy';
+import { ExperienceAcademy } from '../entities/experience-academy.entity';
 import { ExperienceStyle } from '../entities/experience-style.entity';
-import { ExperienceSchedule } from '../entities/experience-schedule';
+import { ExperienceSchedule } from '../entities/experience-schedule.entity';
 import slugify from 'slugify';
 import { CreateExperienceDto } from '../dtos/create-experience.dto';
 import { AddExperiencePlaceDto } from '../dtos/add-experience-place.dto';
@@ -128,5 +128,19 @@ export class ExperiencesService {
     });
 
     return this.scheduleRepository.save(schedule);
+  }
+
+  async updateCoverImage(experienceId: number, coverImageId: number) {
+    const experience = await this.experiencesRepository.findOneBy({
+      id: experienceId,
+    });
+
+    if (!experience) {
+      throw new NotFoundException('Experience not found');
+    }
+
+    experience.coverImageId = coverImageId;
+
+    return this.experiencesRepository.save(experience);
   }
 }
