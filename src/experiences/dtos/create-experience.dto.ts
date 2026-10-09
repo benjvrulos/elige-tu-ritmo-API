@@ -51,6 +51,10 @@ export class CreateExperienceDto {
 
   @IsOptional()
   @IsString()
+  requirements?: string;
+
+  @IsOptional()
+  @IsString()
   recommendations?: string;
 
   @IsOptional()
