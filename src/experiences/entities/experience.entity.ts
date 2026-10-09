@@ -14,6 +14,7 @@ import { ExperiencePlace } from './experience-place.entity';
 import { ExperienceStyle } from './experience-style.entity';
 import { ExperienceAcademy } from './experience-academy.entity';
 import { ExperienceSchedule } from './experience-schedule.entity';
+import { ExperienceTranslation } from './experience-translation.entity';
 
 @Entity('experience')
 export class Experience {
@@ -126,6 +127,12 @@ export class Experience {
 
   @OneToMany(() => ExperienceSchedule, (schedule) => schedule.experience)
   schedules!: ExperienceSchedule[];
+
+  @OneToMany(
+    () => ExperienceTranslation,
+    (translation) => translation.experience,
+  )
+  translations!: ExperienceTranslation[];
 
   @CreateDateColumn()
   createdAt!: Date;

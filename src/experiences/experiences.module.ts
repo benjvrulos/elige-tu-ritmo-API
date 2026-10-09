@@ -7,6 +7,7 @@ import { ExperiencePlace } from './entities/experience-place.entity';
 import { ExperienceAcademy } from './entities/experience-academy.entity';
 import { ExperienceStyle } from './entities/experience-style.entity';
 import { ExperienceSchedule } from './entities/experience-schedule.entity';
+import { ExperienceTranslation } from './entities/experience-translation.entity';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ExperienceSchedule } from './entities/experience-schedule.entity';
       ExperienceAcademy,
       ExperienceStyle,
       ExperienceSchedule,
+      ExperienceTranslation,
     ]),
   ],
   controllers: [ExperiencesController],

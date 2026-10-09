@@ -15,6 +15,7 @@ import { AddExperienceStyleDto } from './dtos/add-experience-style.dto';
 import { CreateExperienceScheduleDto } from './dtos/add-experience-schedule.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { CreateExperienceTranslationDto } from './dtos/create-experience-translation.dto';
 
 @Controller('experiences')
 export class ExperiencesController {
@@ -74,5 +75,13 @@ export class ExperiencesController {
     @Body('coverImageId', ParseIntPipe) coverImageId: number,
   ) {
     return this.experiencesService.updateCoverImage(id, coverImageId);
+  }
+
+  @Post(':id/translations')
+  addTranslation(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreateExperienceTranslationDto,
+  ) {
+    return this.experiencesService.addTranslation(id, dto);
   }
 }

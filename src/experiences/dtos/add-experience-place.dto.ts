@@ -16,6 +16,10 @@ export class AddExperiencePlaceDto {
   title?: string;
 
   @IsOptional()
+  @IsInt()
+  startOffsetMinutes?: number;
+
+  @IsOptional()
   @IsString()
   notes?: string;
 }

@@ -1,7 +1,0 @@
-PATCH http://localhost:3000/experiences/1/cover-image
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImVtYWlsIjoicnVsb3NAZ21haWwuY29tIiwiaWF0IjoxNzkxMzk3ODYyLCJleHAiOjE3OTE0MDE0NjIsImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.S_Xqq5ctcUEhUrDdPYkriVWYloFZxx9qag-GMYZMHXo
-
-{
-  "coverImageId": 33
-}

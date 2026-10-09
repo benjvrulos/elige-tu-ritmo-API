@@ -12,6 +12,8 @@ import { AddExperiencePlaceDto } from '../dtos/add-experience-place.dto';
 import { AddExperienceAcademyDto } from '../dtos/add-experience-academy.dto';
 import { AddExperienceStyleDto } from '../dtos/add-experience-style.dto';
 import { CreateExperienceScheduleDto } from '../dtos/add-experience-schedule.dto';
+import { ExperienceTranslation } from '../entities/experience-translation.entity';
+import { CreateExperienceTranslationDto } from '../dtos/create-experience-translation.dto';
 
 @Injectable()
 export class ExperiencesService {
@@ -30,6 +32,9 @@ export class ExperiencesService {
 
     @InjectRepository(ExperienceSchedule)
     private readonly scheduleRepository: Repository<ExperienceSchedule>,
+
+    @InjectRepository(ExperienceTranslation)
+    private readonly translationRepository: Repository<ExperienceTranslation>,
   ) {}
 
   async create(dto: CreateExperienceDto) {
@@ -51,6 +56,7 @@ export class ExperiencesService {
       where: { isActive: true },
       relations: [
         'coverImage',
+        'translations',
         'places',
         'places.place',
         'academies',
@@ -59,14 +65,25 @@ export class ExperiencesService {
         'styles.style',
         'schedules',
       ],
+
+      order: {
+        places: {
+          position: 'ASC',
+        },
+        schedules: {
+          startDateTime: 'ASC',
+        },
+      },
     });
   }
 
   async findOne(id: number) {
     const experience = await this.experiencesRepository.findOne({
       where: { id },
+
       relations: [
         'coverImage',
+        'translations',
         'places',
         'places.place',
         'academies',
@@ -75,6 +92,15 @@ export class ExperiencesService {
         'styles.style',
         'schedules',
       ],
+
+      order: {
+        places: {
+          position: 'ASC',
+        },
+        schedules: {
+          startDateTime: 'ASC',
+        },
+      },
     });
 
     if (!experience) {
@@ -142,5 +168,25 @@ export class ExperiencesService {
     experience.coverImageId = coverImageId;
 
     return this.experiencesRepository.save(experience);
+  }
+
+  async addTranslation(
+    experienceId: number,
+    dto: CreateExperienceTranslationDto,
+  ) {
+    const experience = await this.experiencesRepository.findOneBy({
+      id: experienceId,
+    });
+
+    if (!experience) {
+      throw new NotFoundException('Experience not found');
+    }
+
+    const translation = this.translationRepository.create({
+      experienceId,
+      ...dto,
+    });
+
+    return this.translationRepository.save(translation);
   }
 }
