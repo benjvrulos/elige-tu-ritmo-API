@@ -16,6 +16,7 @@ import { CreateExperienceScheduleDto } from './dtos/add-experience-schedule.dto'
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
 import { CreateExperienceTranslationDto } from './dtos/create-experience-translation.dto';
+import { CreateExperiencePlaceTranslationDto } from './dtos/create-experience-place-translation.dto';
 
 @Controller('experiences')
 export class ExperiencesController {
@@ -32,6 +33,7 @@ export class ExperiencesController {
     return this.experiencesService.findAll();
   }
 
+  @Auth(AuthType.None)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.experiencesService.findOne(id);
@@ -83,5 +85,26 @@ export class ExperiencesController {
     @Body() dto: CreateExperienceTranslationDto,
   ) {
     return this.experiencesService.addTranslation(id, dto);
+  }
+
+  @Auth(AuthType.None)
+  @Get('slug/:slug')
+  findBySlug(@Param('slug') slug: string) {
+    return this.experiencesService.findBySlug(slug);
+  }
+
+  @Auth(AuthType.None)
+  @Post(':experienceId/places/:experiencePlaceId/translations')
+  addPlaceTranslation(
+    @Param('experienceId', ParseIntPipe) experienceId: number,
+    @Param('experiencePlaceId', ParseIntPipe)
+    experiencePlaceId: number,
+    @Body() dto: CreateExperiencePlaceTranslationDto,
+  ) {
+    return this.experiencesService.addPlaceTranslation(
+      experienceId,
+      experiencePlaceId,
+      dto,
+    );
   }
 }

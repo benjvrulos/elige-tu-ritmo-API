@@ -10,6 +10,7 @@ import {
 import { PlacesService } from './providers/places.service';
 import { CreatePlaceDto } from './dtos/create-place.dto';
 import { UpdatePlaceDto } from './dtos/update-place.dto';
+import { CreatePlaceTranslationDto } from './dtos/create-place-translation.dto';
 
 @Controller('places')
 export class PlacesController {
@@ -33,5 +34,13 @@ export class PlacesController {
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePlaceDto) {
     return this.placesService.update(id, dto);
+  }
+
+  @Post(':id/translations')
+  addTranslation(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreatePlaceTranslationDto,
+  ) {
+    return this.placesService.addTranslation(id, dto);
   }
 }

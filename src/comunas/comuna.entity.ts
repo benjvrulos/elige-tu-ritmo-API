@@ -1,5 +1,5 @@
 import { Academy } from 'src/academies/academy.entity';
-import { Place } from 'src/places/place.entity';
+import { Place } from 'src/places/entities/place.entity';
 import { Region } from 'src/regions/region.entity';
 import {
   Column,

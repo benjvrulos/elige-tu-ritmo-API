@@ -2,15 +2,20 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePlaceDto } from '../dtos/create-place.dto';
-import { Place } from '../place.entity';
+import { Place } from '../entities/place.entity';
 import slugify from 'slugify';
 import { UpdatePlaceDto } from '../dtos/update-place.dto';
+import { PlaceTranslation } from '../entities/place-translation.entity';
+import { CreatePlaceTranslationDto } from '../dtos/create-place-translation.dto';
 
 @Injectable()
 export class PlacesService {
   constructor(
     @InjectRepository(Place)
     private readonly placeRepository: Repository<Place>,
+
+    @InjectRepository(PlaceTranslation)
+    private readonly placeTranslationRepository: Repository<PlaceTranslation>,
   ) {}
 
   async create(dto: CreatePlaceDto) {
@@ -67,5 +72,22 @@ export class PlacesService {
     place.isActive = false;
 
     return this.placeRepository.save(place);
+  }
+
+  async addTranslation(placeId: number, dto: CreatePlaceTranslationDto) {
+    const place = await this.placeRepository.findOne({
+      where: { id: placeId },
+    });
+
+    if (!place) {
+      throw new NotFoundException('Place not found');
+    }
+
+    const translation = this.placeTranslationRepository.create({
+      ...dto,
+      placeId,
+    });
+
+    return this.placeTranslationRepository.save(translation);
   }
 }

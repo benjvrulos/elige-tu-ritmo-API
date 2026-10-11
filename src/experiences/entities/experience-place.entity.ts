@@ -3,10 +3,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Experience } from './experience.entity';
-import { Place } from 'src/places/place.entity';
+import { Place } from 'src/places/entities/place.entity';
+import { ExperiencePlaceTranslation } from './experience-place-translation.entity';
 
 @Entity('experience_place')
 export class ExperiencePlace {
@@ -28,6 +30,12 @@ export class ExperiencePlace {
   @ManyToOne(() => Place, (place) => place.experiences)
   @JoinColumn({ name: 'placeId' })
   place!: Place;
+
+  @OneToMany(
+    () => ExperiencePlaceTranslation,
+    (translation) => translation.experiencePlace,
+  )
+  translations!: ExperiencePlaceTranslation[];
 
   @Column({ type: 'int' })
   position!: number;

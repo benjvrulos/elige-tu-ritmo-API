@@ -8,14 +8,16 @@ import { ExperienceAcademy } from './entities/experience-academy.entity';
 import { ExperienceStyle } from './entities/experience-style.entity';
 import { ExperienceSchedule } from './entities/experience-schedule.entity';
 import { ExperienceTranslation } from './entities/experience-translation.entity';
+import { ExperiencePlaceTranslation } from './entities/experience-place-translation.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Experience,
       ExperiencePlace,
-      ExperienceAcademy,
+      ExperiencePlaceTranslation,
       ExperienceStyle,
+      ExperienceAcademy,
       ExperienceSchedule,
       ExperienceTranslation,
     ]),

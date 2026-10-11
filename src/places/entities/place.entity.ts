@@ -10,8 +10,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PlaceType } from './enums/place-type.enum';
+import { PlaceType } from '../enums/place-type.enum';
 import { ExperiencePlace } from 'src/experiences/entities/experience-place.entity';
+import { PlaceTranslation } from './place-translation.entity';
 
 @Entity('place')
 export class Place {
@@ -88,6 +89,9 @@ export class Place {
 
   @OneToMany(() => ExperiencePlace, (experiencePlace) => experiencePlace.place)
   experiences!: ExperiencePlace[];
+
+  @OneToMany(() => PlaceTranslation, (translation) => translation.place)
+  translations!: PlaceTranslation[];
 
   @CreateDateColumn()
   createdAt!: Date;

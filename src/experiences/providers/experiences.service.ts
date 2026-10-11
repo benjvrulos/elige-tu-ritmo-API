@@ -14,6 +14,8 @@ import { AddExperienceStyleDto } from '../dtos/add-experience-style.dto';
 import { CreateExperienceScheduleDto } from '../dtos/add-experience-schedule.dto';
 import { ExperienceTranslation } from '../entities/experience-translation.entity';
 import { CreateExperienceTranslationDto } from '../dtos/create-experience-translation.dto';
+import { ExperiencePlaceTranslation } from '../entities/experience-place-translation.entity';
+import { CreateExperiencePlaceTranslationDto } from '../dtos/create-experience-place-translation.dto';
 
 @Injectable()
 export class ExperiencesService {
@@ -35,6 +37,9 @@ export class ExperiencesService {
 
     @InjectRepository(ExperienceTranslation)
     private readonly translationRepository: Repository<ExperienceTranslation>,
+
+    @InjectRepository(ExperiencePlaceTranslation)
+    private readonly experiencePlaceTranslationRepository: Repository<ExperiencePlaceTranslation>,
   ) {}
 
   async create(dto: CreateExperienceDto) {
@@ -188,5 +193,76 @@ export class ExperiencesService {
     });
 
     return this.translationRepository.save(translation);
+  }
+
+  async findBySlug(slug: string) {
+    const match = await this.experiencesRepository
+      .createQueryBuilder('experience')
+      .leftJoin('experience.translations', 'translation')
+      .where('experience.slug = :slug', { slug })
+      .orWhere('translation.slug = :slug', { slug })
+      .select('experience.id')
+      .getOne();
+
+    if (!match) {
+      throw new NotFoundException('Experience not found');
+    }
+
+    const experience = await this.experiencesRepository.findOne({
+      where: {
+        id: match.id,
+      },
+      relations: [
+        'coverImage',
+        'places',
+        'places.translations',
+        'places.place',
+        'places.place.translations',
+        'styles',
+        'styles.style',
+        'academies',
+        'academies.academy',
+        'schedules',
+        'translations',
+      ],
+      order: {
+        places: {
+          position: 'ASC',
+        },
+        schedules: {
+          startDateTime: 'ASC',
+        },
+      },
+    });
+
+    if (!experience) {
+      throw new NotFoundException('Experience not found');
+    }
+
+    return experience;
+  }
+
+  async addPlaceTranslation(
+    experienceId: number,
+    experiencePlaceId: number,
+    dto: CreateExperiencePlaceTranslationDto,
+  ) {
+    const experiencePlace = await this.experiencePlaceRepository.findOne({
+      where: {
+        id: experiencePlaceId,
+        experienceId,
+      },
+    });
+
+    if (!experiencePlace) {
+      throw new NotFoundException('Experience place not found');
+    }
+
+    const translation = this.experiencePlaceTranslationRepository.create({
+      ...dto,
+      experiencePlaceId,
+    });
+
+    return this.experiencePlaceTranslationRepository.save(translation);
   }
 }

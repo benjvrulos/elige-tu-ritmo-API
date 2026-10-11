@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { fileTypes } from './enums/file-types.enum';
 import { Academy } from 'src/academies/academy.entity';
-import { Place } from 'src/places/place.entity';
+import { Place } from 'src/places/entities/place.entity';
 import { Experience } from 'src/experiences/entities/experience.entity';
 
 @Entity()
