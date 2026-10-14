@@ -91,6 +91,12 @@ export class Booking {
   @Column({ type: 'text', nullable: true })
   specialRequests?: string;
 
+  @Column({
+    type: 'timestamptz',
+    nullable: true,
+  })
+  expiresAt?: Date | null;
+
   @OneToMany(() => BookingParticipant, (participant) => participant.booking, {
     cascade: true,
   })

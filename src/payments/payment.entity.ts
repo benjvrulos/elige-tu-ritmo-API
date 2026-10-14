@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
 import { PaymentProvider } from './enums/payment-provider.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
 
@@ -20,7 +21,7 @@ export class Payment {
   bookingId!: number;
 
   @ManyToOne(() => Booking, (booking) => booking.payments, {
-    onDelete: 'CASCADE',
+    onDelete: 'RESTRICT',
   })
   @JoinColumn({ name: 'bookingId' })
   booking!: Booking;
@@ -45,20 +46,41 @@ export class Payment {
   })
   amount!: number;
 
-  @Column({ length: 3, default: 'USD' })
+  @Column({
+    length: 3,
+    default: 'USD',
+  })
   currency!: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({
+    length: 255,
+    nullable: true,
+  })
   providerPaymentId?: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({
+    length: 255,
+    nullable: true,
+  })
   transactionId?: string;
 
-  @Column({ length: 100, nullable: true })
+  @Column({
+    length: 100,
+    nullable: true,
+  })
   paymentMethod?: string;
 
-  @Column({ type: 'timestamptz', nullable: true })
-  paidAt?: Date;
+  @Column({
+    type: 'timestamptz',
+    nullable: true,
+  })
+  paidAt?: Date | null;
+
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  failureReason?: string;
 
   @Column({
     type: 'decimal',
@@ -68,11 +90,17 @@ export class Payment {
   })
   refundedAmount!: number;
 
-  @Column({ type: 'timestamptz', nullable: true })
-  refundedAt?: Date;
+  @Column({
+    type: 'timestamptz',
+    nullable: true,
+  })
+  refundedAt?: Date | null;
 
-  @Column({ type: 'jsonb', nullable: true })
-  metadata?: Record<string, any>;
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+  })
+  metadata?: Record<string, unknown>;
 
   @CreateDateColumn()
   createdAt!: Date;

@@ -1,4 +1,36 @@
-import { Controller } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
+
+import { BookingsService } from './providers/bookings.service';
+import { CreateBookingDto } from './dtos/create-booking.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
 
 @Controller('bookings')
-export class BookingsController {}
+export class BookingsController {
+  constructor(private readonly bookingsService: BookingsService) {}
+
+  @Auth(AuthType.None)
+  @Post()
+  create(
+    @Body()
+    dto: CreateBookingDto,
+  ) {
+    return this.bookingsService.create(dto);
+  }
+
+  @Auth(AuthType.None)
+  @Get(':id')
+  findOne(
+    @Param('id', ParseIntPipe)
+    id: number,
+  ) {
+    return this.bookingsService.findOne(id);
+  }
+}
