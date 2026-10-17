@@ -17,12 +17,17 @@ import { CreateExperienceTranslationDto } from '../dtos/create-experience-transl
 import { ExperiencePlaceTranslation } from '../entities/experience-place-translation.entity';
 import { CreateExperiencePlaceTranslationDto } from '../dtos/create-experience-place-translation.dto';
 
+import { DataSource } from 'typeorm';
+import { Booking } from 'src/bookings/entities/booking.entity';
+import { BookingStatus } from 'src/bookings/enums/bookin-status.enum';
+
 @Injectable()
 export class ExperiencesService {
   constructor(
     @InjectRepository(Experience)
     private readonly experiencesRepository: Repository<Experience>,
 
+    private readonly dataSource: DataSource,
     @InjectRepository(ExperiencePlace)
     private readonly experiencePlaceRepository: Repository<ExperiencePlace>,
 
@@ -56,30 +61,83 @@ export class ExperiencesService {
     return this.experiencesRepository.save(experience);
   }
 
-  findAll() {
-    return this.experiencesRepository.find({
-      where: { isActive: true },
-      relations: [
-        'coverImage',
-        'translations',
-        'places',
-        'places.place',
-        'academies',
-        'academies.academy',
-        'styles',
-        'styles.style',
-        'schedules',
-      ],
-
-      order: {
+  async findAll() {
+    const experiences = await this.experiencesRepository.find({
+      relations: {
+        coverImage: true,
         places: {
-          position: 'ASC',
+          place: true,
         },
-        schedules: {
-          startDateTime: 'ASC',
+        academies: true,
+        styles: {
+          style: true,
         },
+        schedules: true,
+        translations: true,
       },
     });
+
+    const scheduleIds = experiences.flatMap((experience) =>
+      experience.schedules.map((schedule) => schedule.id),
+    );
+
+    if (scheduleIds.length === 0) {
+      return experiences;
+    }
+
+    const reservedRows = await this.dataSource
+      .getRepository(Booking)
+      .createQueryBuilder('booking')
+      .select('booking.scheduleId', 'scheduleId')
+      .addSelect('COALESCE(SUM(booking.peopleCount), 0)', 'reservedPeople')
+      .where('booking.scheduleId IN (:...scheduleIds)', {
+        scheduleIds,
+      })
+      .andWhere(
+        `
+        (
+          booking.status = :confirmed
+          OR
+          (
+            booking.status = :pending
+            AND booking.expiresAt > NOW()
+          )
+        )
+        `,
+        {
+          confirmed: BookingStatus.CONFIRMED,
+
+          pending: BookingStatus.PENDING,
+        },
+      )
+      .groupBy('booking.scheduleId')
+      .getRawMany<{
+        scheduleId: string;
+        reservedPeople: string;
+      }>();
+
+    const reservedBySchedule = new Map<number, number>();
+
+    for (const row of reservedRows) {
+      reservedBySchedule.set(
+        Number(row.scheduleId),
+        Number(row.reservedPeople),
+      );
+    }
+
+    return experiences.map((experience) => ({
+      ...experience,
+
+      schedules: experience.schedules.map((schedule) => {
+        const reservedPeople = reservedBySchedule.get(schedule.id) ?? 0;
+
+        return {
+          ...schedule,
+
+          availableSpots: Math.max(0, schedule.capacity - reservedPeople),
+        };
+      }),
+    }));
   }
 
   async findOne(id: number) {
@@ -239,7 +297,69 @@ export class ExperiencesService {
       throw new NotFoundException('Experience not found');
     }
 
-    return experience;
+    const scheduleIds = experience.schedules.map((schedule) => schedule.id);
+
+    if (scheduleIds.length === 0) {
+      return {
+        ...experience,
+        schedules: [],
+      };
+    }
+
+    const reservedRows = await this.dataSource
+      .getRepository(Booking)
+      .createQueryBuilder('booking')
+      .select('booking.scheduleId', 'scheduleId')
+      .addSelect('COALESCE(SUM(booking.peopleCount), 0)', 'reservedPeople')
+      .where('booking.scheduleId IN (:...scheduleIds)', {
+        scheduleIds,
+      })
+      .andWhere(
+        `
+      (
+        booking.status = :confirmed
+        OR
+        (
+          booking.status = :pending
+          AND booking.expiresAt > NOW()
+        )
+      )
+      `,
+        {
+          confirmed: BookingStatus.CONFIRMED,
+
+          pending: BookingStatus.PENDING,
+        },
+      )
+      .groupBy('booking.scheduleId')
+      .getRawMany<{
+        scheduleId: string;
+        reservedPeople: string;
+      }>();
+
+    const reservedBySchedule = new Map<number, number>();
+
+    for (const row of reservedRows) {
+      reservedBySchedule.set(
+        Number(row.scheduleId),
+        Number(row.reservedPeople),
+      );
+    }
+
+    return {
+      ...experience,
+
+      schedules: experience.schedules.map((schedule) => {
+        const reservedPeople = reservedBySchedule.get(schedule.id) ?? 0;
+
+        const availableSpots = Math.max(0, schedule.capacity - reservedPeople);
+
+        return {
+          ...schedule,
+          availableSpots,
+        };
+      }),
+    };
   }
 
   async addPlaceTranslation(

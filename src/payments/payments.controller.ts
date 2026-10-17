@@ -9,6 +9,7 @@ import {
   Post,
   type RawBodyRequest,
   Req,
+  Query,
 } from '@nestjs/common';
 import { Request } from 'express';
 
@@ -26,6 +27,14 @@ export class PaymentsController {
     private readonly paymentsService: PaymentsService,
     private readonly stripeProvider: StripeProvider,
   ) {}
+
+  @Get('booking/:bookingId')
+  findByBooking(
+    @Param('bookingId', ParseIntPipe)
+    bookingId: number,
+  ) {
+    return this.paymentsService.findByBooking(bookingId);
+  }
 
   @Auth(AuthType.None)
   @Post('stripe/checkout/:bookingId')
@@ -66,18 +75,31 @@ export class PaymentsController {
     };
   }
 
+  @Auth(AuthType.None)
+  @Get('checkout/:bookingId')
+  getCheckoutPayment(
+    @Param('bookingId', ParseIntPipe)
+    bookingId: number,
+
+    @Query('session_id')
+    sessionId?: string,
+  ) {
+    if (!sessionId) {
+      throw new BadRequestException('Stripe session ID is required');
+    }
+
+    return this.paymentsService.getCheckoutPayment(bookingId, sessionId);
+  }
+
+  /*
+   * Endpoints protegidos.
+   */
+
   @Get()
   findAll() {
     return this.paymentsService.findAll();
   }
 
-  @Get('booking/:bookingId')
-  findByBooking(
-    @Param('bookingId', ParseIntPipe)
-    bookingId: number,
-  ) {
-    return this.paymentsService.findByBooking(bookingId);
-  }
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe)

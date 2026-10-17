@@ -5,6 +5,7 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  Max,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -28,6 +29,7 @@ export class CreateBookingDto {
 
   @IsInt()
   @Min(1)
+  @Max(5)
   peopleCount!: number;
 
   @IsOptional()

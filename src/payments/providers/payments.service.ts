@@ -25,109 +25,176 @@ export class PaymentsService {
 
   async createStripeCheckout(bookingId: number) {
     /*
-     * 1. Validamos Booking y creamos Payment.
+     * 1. Validar Booking y resolver
+     *    qué Payment corresponde usar.
      *
-     * Esta transacción termina ANTES de llamar
-     * a Stripe para no mantener una transacción
-     * de PostgreSQL abierta mientras esperamos
-     * una API externa.
+     * La transacción termina ANTES
+     * de llamar a Stripe.
      */
-    const payment = await this.dataSource.transaction(async (manager) => {
-      /*
-       * Bloqueamos solamente Booking.
-       *
-       * No cargamos relaciones aquí para evitar
-       * nuevamente el problema de PostgreSQL:
-       *
-       * FOR UPDATE cannot be applied to the
-       * nullable side of an outer join
-       */
-      const booking = await manager.findOne(Booking, {
-        where: {
-          id: bookingId,
-        },
-        lock: {
-          mode: 'pessimistic_write',
-        },
-      });
+    const { payment, staleCheckoutSessionId } =
+      await this.dataSource.transaction(async (manager) => {
+        /*
+         * Bloqueamos solamente Booking.
+         * No cargar relations aquí.
+         */
+        const booking = await manager.findOne(Booking, {
+          where: {
+            id: bookingId,
+          },
+          lock: {
+            mode: 'pessimistic_write',
+          },
+        });
 
-      if (!booking) {
-        throw new NotFoundException('Booking not found');
-      }
+        if (!booking) {
+          throw new NotFoundException('Booking not found');
+        }
 
-      /*
-       * La reserva debe seguir pendiente.
-       */
-      if (booking.status !== BookingStatus.PENDING) {
-        throw new BadRequestException('Booking is not pending');
-      }
+        /*
+         * Solo se pueden pagar
+         * bookings pendientes.
+         */
+        if (booking.status !== BookingStatus.PENDING) {
+          throw new BadRequestException('Booking is not pending');
+        }
 
-      /*
-       * No permitir pagar nuevamente
-       * una reserva pagada.
-       */
-      if (booking.paymentStatus === BookingPaymentStatus.PAID) {
-        throw new BadRequestException('Booking is already paid');
-      }
+        /*
+         * Evitar doble pago.
+         */
+        if (booking.paymentStatus === BookingPaymentStatus.PAID) {
+          throw new BadRequestException('Booking is already paid');
+        }
 
-      /*
-       * Verificar expiración.
-       */
-      if (booking.expiresAt && booking.expiresAt <= new Date()) {
-        booking.status = BookingStatus.EXPIRED;
+        /*
+         * Verificar expiración.
+         */
+        if (booking.expiresAt && booking.expiresAt <= new Date()) {
+          booking.status = BookingStatus.EXPIRED;
 
-        await manager.save(Booking, booking);
+          await manager.save(Booking, booking);
 
-        throw new BadRequestException('Booking has expired');
-      }
+          throw new BadRequestException('Booking has expired');
+        }
 
-      /*
-       * Si ya existe un Payment PENDING
-       * de Stripe con una sesión creada,
-       * podemos reutilizarlo.
-       */
-      const existingPayment = await manager.findOne(Payment, {
-        where: {
+        /*
+         * Buscar el último Payment
+         * PENDING de Stripe.
+         */
+        const existingPayment = await manager.findOne(Payment, {
+          where: {
+            bookingId: booking.id,
+
+            provider: PaymentProvider.STRIPE,
+
+            status: PaymentStatus.PENDING,
+          },
+
+          order: {
+            createdAt: 'DESC',
+          },
+        });
+
+        let staleCheckoutSessionId: string | null = null;
+
+        /*
+         * Si ya existe un Payment,
+         * comprobamos si el monto sigue
+         * correspondiendo al booking.
+         */
+        if (existingPayment) {
+          const sameAmount =
+            Number(existingPayment.amount) === Number(booking.totalAmount);
+
+          /*
+           * MISMO MONTO:
+           * reutilizamos Payment +
+           * Checkout existente.
+           */
+          if (
+            sameAmount &&
+            existingPayment.providerPaymentId &&
+            existingPayment.metadata?.checkoutUrl
+          ) {
+            return {
+              payment: existingPayment,
+
+              staleCheckoutSessionId: null,
+            };
+          }
+
+          /*
+           * MONTO DISTINTO:
+           *
+           * el Payment anterior ya no
+           * representa el booking actual.
+           */
+          if (!sameAmount) {
+            staleCheckoutSessionId = existingPayment.providerPaymentId ?? null;
+
+            existingPayment.status = PaymentStatus.CANCELLED;
+
+            await manager.save(Payment, existingPayment);
+          }
+        }
+
+        /*
+         * Crear nuevo intento de pago
+         * con el monto ACTUAL
+         * del booking.
+         */
+        const newPayment = manager.create(Payment, {
           bookingId: booking.id,
+
           provider: PaymentProvider.STRIPE,
+
           status: PaymentStatus.PENDING,
-        },
-        order: {
-          createdAt: 'DESC',
-        },
+
+          amount: Number(booking.totalAmount),
+
+          currency: booking.currency,
+
+          refundedAmount: 0,
+        });
+
+        const savedPayment = await manager.save(Payment, newPayment);
+
+        return {
+          payment: savedPayment,
+
+          staleCheckoutSessionId,
+        };
       });
-
-      if (
-        existingPayment &&
-        existingPayment.providerPaymentId &&
-        existingPayment.metadata?.checkoutUrl
-      ) {
-        return existingPayment;
-      }
-
-      /*
-       * Crear intento de pago.
-       */
-      const newPayment = manager.create(Payment, {
-        bookingId: booking.id,
-
-        provider: PaymentProvider.STRIPE,
-
-        status: PaymentStatus.PENDING,
-
-        amount: Number(booking.totalAmount),
-
-        currency: booking.currency,
-
-        refundedAmount: 0,
-      });
-
-      return manager.save(Payment, newPayment);
-    });
 
     /*
-     * Si este Payment ya tenía Checkout,
-     * simplemente devolvemos la URL.
+     * 2. Si existía una Checkout Session
+     *    vieja con monto distinto,
+     *    intentamos expirarla.
+     *
+     * Esto ocurre FUERA de la
+     * transacción PostgreSQL.
+     */
+    if (staleCheckoutSessionId) {
+      try {
+        await this.stripeProvider.expireCheckoutSession(staleCheckoutSessionId);
+      } catch (error) {
+        /*
+         * No abortamos todo si Stripe
+         * informa que ya estaba expirada
+         * o no se puede expirar.
+         *
+         * Localmente ese Payment ya quedó
+         * CANCELLED.
+         */
+        console.warn(
+          `Could not expire old Stripe Checkout session ${staleCheckoutSessionId}`,
+          error,
+        );
+      }
+    }
+
+    /*
+     * 3. Si el Payment sigue siendo válido
+     *    y ya tenía Checkout, devolverlo.
      */
     if (payment.providerPaymentId && payment.metadata?.checkoutUrl) {
       return {
@@ -142,9 +209,9 @@ export class PaymentsService {
     }
 
     /*
-     * 2. Cargar Booking + Experience.
+     * 4. Cargar Booking + Experience.
      *
-     * Ya fuera de la transacción.
+     * Ya estamos fuera de la transacción.
      */
     const booking = await this.dataSource.getRepository(Booking).findOne({
       where: {
@@ -163,7 +230,19 @@ export class PaymentsService {
     }
 
     /*
-     * 3. Crear Checkout Session en Stripe.
+     * Protección adicional:
+     * comprobar que el Payment recién
+     * creado tiene el mismo monto
+     * que el Booking actual.
+     */
+    if (Number(payment.amount) !== Number(booking.totalAmount)) {
+      throw new BadRequestException(
+        'Payment amount does not match booking total',
+      );
+    }
+
+    /*
+     * 5. Crear nueva Checkout Session.
      */
     let session: Stripe.Checkout.Session;
 
@@ -185,8 +264,8 @@ export class PaymentsService {
       });
     } catch {
       /*
-       * Si Stripe falla, dejamos trazabilidad
-       * del intento.
+       * Stripe falló:
+       * conservar trazabilidad.
        */
       await this.dataSource.getRepository(Payment).update(payment.id, {
         status: PaymentStatus.FAILED,
@@ -196,7 +275,7 @@ export class PaymentsService {
     }
 
     /*
-     * 4. Guardar referencia de Stripe.
+     * 6. Guardar referencia Stripe.
      */
     payment.providerPaymentId = session.id;
 
@@ -211,7 +290,7 @@ export class PaymentsService {
     await this.dataSource.getRepository(Payment).save(payment);
 
     /*
-     * 5. Lo que recibe React.
+     * 7. Respuesta para React.
      */
     return {
       bookingId: booking.id,
@@ -268,6 +347,23 @@ export class PaymentsService {
       return;
     }
 
+    /*
+     * Obtenemos el PaymentIntent asociado
+     * a esta sesión.
+     */
+    const paymentIntentId =
+      typeof session.payment_intent === 'string'
+        ? session.payment_intent
+        : session.payment_intent?.id;
+
+    /*
+     * Consultamos Stripe para obtener
+     * método de pago, marca y últimos 4.
+     */
+    const stripePaymentDetails = paymentIntentId
+      ? await this.stripeProvider.getPaymentIntentDetails(paymentIntentId)
+      : null;
+
     await this.dataSource.transaction(async (manager) => {
       /*
        * Stripe lleva nuestro paymentId
@@ -302,6 +398,10 @@ export class PaymentsService {
        * Si ya fue procesado, terminamos.
        */
       if (payment.status === PaymentStatus.PAID) {
+        return;
+      }
+
+      if (payment.status !== PaymentStatus.PENDING) {
         return;
       }
 
@@ -356,12 +456,10 @@ export class PaymentsService {
 
       payment.paidAt = new Date();
 
-      payment.transactionId =
-        typeof session.payment_intent === 'string'
-          ? session.payment_intent
-          : session.payment_intent?.id;
+      payment.transactionId = paymentIntentId;
 
-      payment.paymentMethod = 'STRIPE_CHECKOUT';
+      payment.paymentMethod =
+        stripePaymentDetails?.paymentMethodType ?? 'STRIPE';
 
       payment.metadata = {
         ...payment.metadata,
@@ -372,6 +470,10 @@ export class PaymentsService {
           typeof session.customer === 'string'
             ? session.customer
             : session.customer?.id,
+
+        cardBrand: stripePaymentDetails?.brand ?? null,
+
+        cardLast4: stripePaymentDetails?.last4 ?? null,
       };
 
       /*
@@ -399,7 +501,6 @@ export class PaymentsService {
       await manager.save(Booking, booking);
     });
   }
-
   private async handleCheckoutFailed(
     session: Stripe.Checkout.Session,
   ): Promise<void> {
@@ -420,6 +521,49 @@ export class PaymentsService {
     );
   }
 
+  async getCheckoutPayment(bookingId: number, sessionId: string) {
+    if (!sessionId) {
+      throw new BadRequestException('Stripe session ID is required');
+    }
+
+    const payment = await this.dataSource.getRepository(Payment).findOne({
+      where: {
+        bookingId,
+        provider: PaymentProvider.STRIPE,
+        providerPaymentId: sessionId,
+        status: PaymentStatus.PAID,
+      },
+
+      relations: {
+        booking: {
+          schedule: {
+            experience: { coverImage: true },
+          },
+        },
+      },
+    });
+
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    return {
+      payment: {
+        id: payment.id,
+        status: payment.status,
+        provider: payment.provider,
+        amount: Number(payment.amount),
+        currency: payment.currency,
+        transactionId: payment.transactionId,
+        paymentMethod: payment.paymentMethod,
+        paidAt: payment.paidAt,
+        brand: payment.metadata?.cardBrand ?? null,
+        last4: payment.metadata?.cardLast4 ?? null,
+      },
+
+      booking: payment.booking,
+    };
+  }
   async findAll() {
     return this.dataSource.getRepository(Payment).find({
       relations: {

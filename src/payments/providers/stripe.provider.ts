@@ -22,6 +22,7 @@ export class StripeProvider {
         ? this.configService.get<string>('FRONTEND_PROD_URL')
         : this.configService.get<string>('FRONTEND_DEV_URL');
 
+    console.log('STRIPE FRONTEND URL:', frontendUrl);
     if (!secretKey) {
       throw new Error('STRIPE_SECRET_KEY is not configured');
     }
@@ -96,7 +97,7 @@ export class StripeProvider {
 
       success_url: `${this.frontendUrl}/checkout/${params.bookingId}?session_id={CHECKOUT_SESSION_ID}`,
 
-      cancel_url: `${this.frontendUrl}`,
+      cancel_url: `${this.frontendUrl}/checkout/${params.bookingId}?cancelled=true`,
     });
   }
 
@@ -110,5 +111,35 @@ export class StripeProvider {
     } catch {
       throw new BadRequestException('Invalid Stripe webhook signature');
     }
+  }
+
+  async getPaymentIntentDetails(paymentIntentId: string) {
+    const paymentIntent = await this.stripe.paymentIntents.retrieve(
+      paymentIntentId,
+      {
+        expand: ['latest_charge'],
+      },
+    );
+
+    const charge =
+      typeof paymentIntent.latest_charge === 'string'
+        ? null
+        : paymentIntent.latest_charge;
+
+    const card = charge?.payment_method_details?.card;
+
+    return {
+      paymentIntentId: paymentIntent.id,
+
+      paymentMethodType: charge?.payment_method_details?.type,
+
+      brand: card?.brand,
+
+      last4: card?.last4,
+    };
+  }
+
+  async expireCheckoutSession(sessionId: string) {
+    return this.stripe.checkout.sessions.expire(sessionId);
   }
 }
